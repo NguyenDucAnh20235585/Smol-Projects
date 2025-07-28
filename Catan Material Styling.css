@@ -1,0 +1,67 @@
+.material-container {
+    display: flex;
+    flex-direction: row;
+    min-width: 550px; /* 5 card x 100px + 4 gap x 10px */
+    flex-wrap: nowrap;
+}
+
+.material{
+    width: 100px;
+    height: 200px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: row;
+    margin: 10px;
+    font-size: 20px;
+    color: snow;
+    align-items: center;
+    justify-content: flex-start; 
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 10px; 
+}
+.icon {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: all 0.3s ease-in-out;
+}
+
+.description {
+    display: none;
+    font-size: 12px;
+    margin-top: 10px;
+    color: snow;
+    transition: all 0.3s ease-in-out;
+    min-height: 40px;
+    padding: 5px;
+}
+.material:hover .icon { 
+    display: none;
+}
+.material:hover {
+    transform: scale(1.05);
+}
+.material:hover .description {
+    display: block;
+}
+.material.wood {
+    background-color: #8B4513;
+}
+.material.brick {
+    background-color: #FF6347;
+}
+.material.sheep {
+    background-color: #32CD32;
+}
+.material.wheat {
+    background-color: #FFD700;
+}
+.material.ore {
+    background-color: #A9A9A9;
+}
