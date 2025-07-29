@@ -10,7 +10,7 @@ const max = 100;
 let count = 0;
 
 function generate_random_number() {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return Math.round(Math.random() * (max - min + 1)) + min;
 }
 
 random.onclick = function () {
