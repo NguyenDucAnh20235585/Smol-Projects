@@ -1,18 +1,27 @@
 // i need to make a simple counter works
 
+const decrease = document.getElementById("decrease");
+const reset = document.getElementById("reset");
+const increase = document.getElementById("increase");
+const label = document.getElementById("label");
+
 let count = 0;
 
-document.getElementById("increase").onclick = function() {
-    count = count + 1;
-    document.getElementById("h1").textContent = count;
+function updateDisplay() {
+    label.textContent = count; 
 }
 
-document.getElementById("decrease").onclick = function() {
-    count = count - 1;
-    document.getElementById("h1").textContent = count;
+decrease.onclick = function() {
+    count--;
+    updateDisplay()
 }
 
-document.getElementById("reset").onclick = function() {
+reset.onclick = function() {
     count = 0;
-    document.getElementById("h1").textContent = count;
+    updateDisplay()
+}
+
+increase.onclick = function() {
+    count++;
+    updateDisplay()
 }
