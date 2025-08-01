@@ -38,7 +38,7 @@ function papyrus_guessing(){
 
         if(!guess) {
 
-        h3.textContent = "Enter a number, human!";
+        h3.textContent = "Pick a number, human!";
 
         return;
     }
