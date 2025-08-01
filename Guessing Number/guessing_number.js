@@ -8,19 +8,37 @@ const h3 = document.getElementById("H3");
 
 const remaining = document.getElementById("remaining");
 
+const guess_again = document.getElementById("guess_again");
+
 const min = 1;
 
 const max = 100;
 
 const max_attempts = 16;
 
-const answer = Math.floor(Math.random() * (max - min + 1)) + min
+let answer = Math.floor(Math.random() * (max - min + 1)) + min;
 
 let guess;
 
 let attempt = 0;
 
 let running = true;
+
+function reset(){
+    
+    answer = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    attempt = 0;
+
+    running = true;
+
+    h3.textContent = "";
+
+    input.value = "";
+
+    update_attempt();
+
+}
 
 function update_attempt(){
 
@@ -38,7 +56,7 @@ function papyrus_guessing(){
 
         if(!guess) {
 
-        h3.textContent = "Pick a number, human!";
+        h3.textContent = "Enter a number, human!";
 
         return;
     }
@@ -92,8 +110,11 @@ function papyrus_guessing(){
 
 
 submit.addEventListener("click", papyrus_guessing);
+
 input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") papyrus_guessing();
 });
+
+guess_again.addEventListener("click", reset);
 
 update_attempt();
