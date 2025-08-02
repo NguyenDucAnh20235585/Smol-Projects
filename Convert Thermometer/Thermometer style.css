@@ -12,7 +12,7 @@ body{
     font-size: 40px;
 }
 
-#radio_group{
+.radio_group{
     color: snow;
     border-radius: 4px;
     text-align: center;
