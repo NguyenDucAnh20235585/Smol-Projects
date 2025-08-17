@@ -1,0 +1,26 @@
+body{
+    background-image: url(images/annoying_dog.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+#clock-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 110vh;
+}
+
+#clock{
+    font-family: 'Press Start 2P', monospace;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    color: aquamarine;
+    backdrop-filter: blur(3px);
+    width: 100%;
+    background-color: black;
+}
