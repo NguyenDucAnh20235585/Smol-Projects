@@ -1,2 +1,2 @@
-# counter_project
- Simple Counter Project with Papyrus 
+# smol-project 
+just a dude who can't forget her.
