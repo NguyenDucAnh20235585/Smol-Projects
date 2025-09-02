@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="rock_paper_scissors.css">
+</head>
+<body>
+
+  <h1>가위바위보</h1>
+
+  <div class="choices">
+
+  <button onclick="play_game('rock')">🪨</button>
+  <button onclick="play_game('paper')">📃</button>
+  <button onclick="play_game('scissors')">✂️</button>
+
+  </div>
+
+  <div id="kris_display">Kris: </div>
+
+  <div id="queen_display">Queen: </div>
+
+  <div id="result_display"></div>
+
+  <div class="score_display">Kris' Points: 
+    <span id="kris_score_display">0</span>
+    </div>
+
+  <div class="score_display">Queen's Points: 
+    <span id="queen_score_display">0</span>
+    </div>
+
+  <script src="rock_paper_scissors.js"></script>
+</body>
+</html>
