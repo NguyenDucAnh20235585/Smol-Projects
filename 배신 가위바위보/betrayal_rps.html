@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="betrayal_rps.css">
+</head>
+<body>
+
+  <h1>배신 가위바위보</h1>
+
+  <div id="declaration_buttons" class="choices">
+    <button onclick="declare_move('rock')">Declare 🪨</button>
+    <button onclick="declare_move('paper')">Declare 📃</button>
+    <button onclick="declare_move('scissors')">Declare ✂️</button>
+  </div>
+    
+  <!-- Declaration Display -->
+  <div class="declaration_display">
+    <div id="kris_declaration">Kris will play: </div>
+    <div id="queen_declaration">Queen will play: </div>
+  </div>
+
+  <!-- Execution Phase (hidden) -->
+  <div id="execution-phase" style="display: none;">
+    <h2>Execution Phase</h2>
+    <div id="execution_buttons" class="choices">
+      <button onclick="play_actual_move('rock')">Play 🪨</button>
+      <button onclick="play_actual_move('paper')">Play 📃</button>
+      <button onclick="play_actual_move('scissors')">Play ✂️</button>
+    </div>
+
+    <!-- Actual Moves Display -->
+    <div class="declaration_display">
+      <div id="kris_secret_choice">Kris played: </div>
+      <div id="queen_secret_choice">Queen played: </div>
+    </div>
+  </div>
+
+  <div id="result_display"></div>
+
+  <div class="score_display">Kris' Points: 
+    <span id="kris_score_display">0</span>
+  </div>
+
+  <div class="score_display">Queen's Points: 
+    <span id="queen_score_display">0</span>
+  </div>
+
+  <script src="betrayal_rps.js"></script>
+</body>
+</html>
