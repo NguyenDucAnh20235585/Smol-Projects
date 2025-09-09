@@ -1,0 +1,82 @@
+{
+    "umas": [
+        {
+            "name": "Air Groove(Quercus Civilis)",
+            "stat_growth": {
+                "SPD": "10%",
+                "STA": "0%",
+                "POW": "10%",
+                "GUTS": "10%",
+                "WIT": "0%"
+            },
+            "track_aptitudes": {
+                "Turf": "A",
+                "Dirt": "G"
+            },
+            "distance_aptitude": {
+                "Sprint": "C",
+                "Mile": "B",
+                "Med": "A",
+                "Long": "E"
+            },
+            "pace_aptitude": {
+                "Front": "D",
+                "Pace": "A",
+                "Late": "A",
+                "End": "G"
+            }
+        },
+        {
+            "name": "Mayano Top Gun(Sunlight Bouquet)",
+            "stat_growth": {
+                "SPD": "10%",
+                "STA": "10%",
+                "POW": "0%",
+                "GUTS": "0%",
+                "WIT": "10%"
+            },
+            "track_aptitudes": {
+                "Turf": "A",
+                "Dirt": "E"
+            },
+            "distance_aptitude": {
+                "Sprint": "D",
+                "Mile": "D",
+                "Med": "A",
+                "Long": "A"
+            },
+            "pace_aptitude": {
+                "Front": "A",
+                "Pace": "A",
+                "Late": "B",
+                "End": "B"
+            }
+        },
+        {
+            "name": "Seiun Sky(Reeling in the Big One)",
+            "stat_growth": {
+                "SPD": "0%",
+                "STA": "10%",
+                "POW": "0%",
+                "GUTS": "0%",
+                "WIT": "20%"
+            },
+            "track_aptitudes": {
+                "Turf": "A",
+                "Dirt": "G"
+            },
+            "distance_aptitude": {
+                "Sprint": "G",
+                "Mile": "C",
+                "Med": "A",
+                "Long": "A"
+            },
+            "pace_aptitude": {
+                "Front": "A",
+                "Pace": "B",
+                "Late": "D",
+                "End": "E"
+            }
+        }
+    ]
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="umamusume_stats_display.css">
+</head>
+<body>
+
+  <div id="container">
+    <div id="select-umas">
+      <h3>List of Umas</h3>
+      <select id="umas">
+        <option value="Air Groove(Quercus Civilis)">Air Groove (Quercus Civilis)</option>
+        <option value="Mayano Top Gun(Sunlight Bouquet)"> Mayano Top Gun(Sunlight Bouquet)</option>
+        <option value="Seiun Sky(Reeling in the Big One)">Seiun Sky(Reeling in the Big One)</option>
+      </select>
+      <div class ="button-wrapper">
+      <button id="confirm_button" onclick="show_uma()">Confirm</button>
+      </div>
+    </div>
+
+    <div id="display-informations" class="hidden">
+  <h2 id="selected-uma-name">Uma Name Will Appear Here</h2>
+  
+  <div class="stats-section">
+    <h3>Stat Growth Rates</h3>
+    <ul id="stat-growth-list">
+      <li>SPD: <span class="growth-value">0%</span></li>
+      <li>STA: <span class="growth-value">0%</span></li>
+      <li>POW: <span class="growth-value">0%</span></li>
+      <li>GUTS: <span class="growth-value">0%</span></li>
+      <li>WIT: <span class="growth-value">0%</span></li>
+    </ul>
+  </div>
+
+  <div class="aptitude-section">
+    <h3>Track Aptitude</h3>
+    <p>Turf: <span class="aptitude-grade" id="turf-aptitude">-</span></p>
+    <p>Dirt: <span class="aptitude-grade" id="dirt-aptitude">-</span></p>
+  </div>
+
+  <div class="aptitude-section">
+    <h3>Distance Aptitude</h3>
+    <p>Sprint: <span class="aptitude-grade" id="sprint-aptitude">-</span></p>
+    <p>Mile: <span class="aptitude-grade" id="mile-aptitude">-</span></p>
+    <p>Medium: <span class="aptitude-grade" id="med-aptitude">-</span></p>
+    <p>Long: <span class="aptitude-grade" id="long-aptitude">-</span></p>
+  </div>
+
+  <div class="aptitude-section">
+    <h3>Running Style Aptitude</h3>
+    <p>Front: <span class="aptitude-grade" id="front-aptitude">-</span></p>
+    <p>Pace: <span class="aptitude-grade" id="pace-aptitude">-</span></p>
+    <p>Late: <span class="aptitude-grade" id="late-aptitude">-</span></p>
+    <p>End: <span class="aptitude-grade" id="end-aptitude">-</span></p>
+  </div>
+
+  <div class ="button-wrapper">
+  <button id="back_button" onclick="go_back()">Back</button>
+  </div>
+
+</div>
+  </div>
+
+  <script src="umamusume_stats_display.js"></script>
+</body>
+</html>
