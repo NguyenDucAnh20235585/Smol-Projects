@@ -1,0 +1,61 @@
+body{
+    background-color: snow;
+}
+
+#images{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.full_name{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px;
+    font-family: "Press Start 2P", monospace;
+    transition: 0.3s ease;
+}
+
+.short_description{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-family: "Press Start 2P", monospace;
+}
+
+h2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+}
+
+ol{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 25px;
+    gap: 10px;
+}
+
+li{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    margin: 10px;
+    padding: 10px;
+    font-family: "Press Start 2P", monospace;
+}
+
+a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    margin: 10px;
+    padding: 10px;
+    font-family: "Press Start 2P", monospace;
+}
