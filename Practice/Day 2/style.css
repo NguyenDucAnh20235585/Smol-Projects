@@ -1,0 +1,36 @@
+body{
+    margin: 0;
+    background-color: snow;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input{
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 5px;
+    border: 10px solid black;
+}
+
+.form{
+    font-size: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 0 0 1px snow;
+}
+
+.confirm{
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-radius: 40px;
+    border: 20px solid crimson;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: violet;
+}
+
+.confirm:hover{
+    transition: 0.2s ease-in-out;
+    transform: scale(1.1);
+}
