@@ -1,0 +1,54 @@
+body{
+    margin: 0;
+    background-color: snow;
+}
+
+.container{
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+select{
+    font-size: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: azure;
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px azure;
+}
+
+option{
+    font-size: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 3px 3px 5px azure;
+}
+
+select:hover{
+    transform: scale(1.05);
+    transition: 0.2s ease;
+    background-color: rgb(240, 255, 248);
+}
+
+button{
+    margin: 20px;
+    font-size: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 3px 3px 5px azure;
+    border-radius: 40px;
+    border: 5px solid black;
+}
+
+#submit_button:hover{
+    transform: scale(1.05);
+    transition: 0.2s ease;
+    background-color: rgb(240, 255, 248);
+}
+
+ul{
+    font-size: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+    box-shadow: 3px 3px 5px azure;
+    margin: 5px;
+    padding: 5px 10px;
+}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class ="container" id="input_container">
+    <select id="to_do_list">
+    <option value="Learn Javascript">Learn Javascript</option>
+    <option value="Make Haru Urara win Arima Kinen">Make Haru Urara win Arima Kinen</option>
+    <option value="Study for semester test">Study for semester test</option>
+    <option value="Jogging">Jogging</option>
+    <option value="Playing Valorant">Playing Valorant</option>
+    </select>
+    <button id="submit_button" onclick="add_task()">Add task</button>
+  </div>
+
+  <div class="container" id="to_do_list_container">
+    <ul id="task_list"></ul>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>
