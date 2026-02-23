@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Day 1 - HTML Skeleton</title>
+  </head>
+
+  <body>
+    <!-- TOP PART -->
+    <header>
+      <h1>My Practice Website</h1>
+      <p>Day 1: HTML basics</p>
+    </header>
+
+    <!-- MENU -->
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#notes">Notes</a>
+      <a href="#profile">Profile</a>
+    </nav>
+
+    <main>
+      <section id="home">
+        <h2>Home</h2>
+        <p>This is my first page skeleton. Tomorrow I will add CSS.</p>
+      </section>
+
+      <section id="tasks">
+        <h2>Tasks</h2>
+        <h3>Today</h3>
+
+        <form>
+          <label for="taskInput">New task:</label>
+          <input id="taskInput" name="task" required minlength="4" autocomplete="off" type="text" placeholder="Type something..." />
+          <button type="submit">Add</button>
+        </form>
+
+        <form>
+          <label for="prio">Priority</label>
+          <input id="prio" name="priority" type="number" min="1" max="5" placeholder="Put a number here" />
+          <button type="submit">Confirm</button>
+        </form>
+
+        <ul>
+          <li>Learn HTML structure</li>
+          <li>Learn CSS tomorrow</li>
+        </ul>
+      </section>
+
+      <section id="notes">
+        <h2>Notes</h2>
+        <p>Write 1 sentence: what I learned today.</p>
+        <ol>
+          <li>Navigation links can jump with #id</li>
+          <li>I can do it if i try hard enough</li>
+          <li>labels must be there for the form</li>
+        </ol>
+      </section>
+
+      <section id="profile">
+        <h2>Profile</h2>
+        <img src="/images/queen.png" alt="queen">
+        <p>I remember how to create a hyperlink</p>
+      </section>
+      </main>
+
+    <!-- BOTTOM PART -->
+    <footer>
+      <p>Made by 3sori</p>
+    </footer>
+  </body>
+</html>
