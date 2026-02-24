@@ -1,0 +1,76 @@
+body{
+    font-family: Arial;
+    padding: 16px;
+}
+
+main{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+section{
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+nav a{
+    text-decoration: none;
+    padding: 6px 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+nav a:hover{
+    background-color: aquamarine;
+}
+
+nav{
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+label{
+    display: block;
+    margin-bottom: 6px;
+}
+
+input{
+    font-size: 20px;
+    background-color:azure;
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button{
+    font-size: 15px;
+    background-color: darkgrey;
+    border-radius: 12px;
+    border: 2px solid black;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+button:hover{
+    opacity: 0.9;
+    background-color: beige;
+}
+
+.task-forms{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.task-forms form{
+  flex: 1;
+  min-width: 400px;
+}
