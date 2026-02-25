@@ -64,13 +64,27 @@ button:hover{
 }
 
 .task-forms{
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  align-items: flex-start;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-start;
 }
 
 .task-forms form{
+    flex: 1;
+    min-width: 400px;
+}
+
+.layout{
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.left, .right{
   flex: 1;
   min-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
