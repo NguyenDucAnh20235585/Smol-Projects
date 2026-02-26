@@ -34,8 +34,8 @@
         <h2>Tasks</h2>
         <h3>Today</h3>
 
-        <div class="task-forms">
-          <form>
+        <div class="taskForms">
+          <form id="taskForm">
             <label for="taskInput">New task:</label>
             <input id="taskInput" name="task" required minlength="4" autocomplete="off" type="text" placeholder="Type something..." />
             <button type="submit">Add</button>
@@ -46,6 +46,7 @@
             <input id="prio" name="priority" type="number" min="1" max="5" placeholder="Put a number here" />
             <button type="submit">Confirm</button>
           </form>
+          
         </div>
         
 
@@ -80,5 +81,6 @@
     <footer>
       <p>Made by 3sori.</p>
     </footer>
+  <script src="index.js"></script>
   </body>
 </html>
