@@ -95,4 +95,5 @@ button:hover{
     color: black;
     padding: 8px;
     margin-top: 8px;
+    gap: 12px;
 }
