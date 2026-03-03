@@ -97,3 +97,14 @@ button:hover{
     margin-top: 8px;
     gap: 20px;
 }
+
+.done{
+    text-decoration: line-through;
+    opacity: 0.7;
+}
+
+#filter{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 25px;
+    border-radius: 12px;
+}
