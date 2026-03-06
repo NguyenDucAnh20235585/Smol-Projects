@@ -9,40 +9,47 @@
   <section id = "player1" class="panel">
     <div class="row">
       <span id="player1RedChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Red">+1 Red</button>
-      <button class="chipButton" data-action="remove" data-color="Red">-1 Red</button>
+      <button class="chipButton" data-action="add" data-color="Red">Take Red</button>
+      <button class="chipButton" data-action="remove" data-color="Red">Remove Red</button>
     </div>
 
     <div class="row">
       <span id="player1GreenChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Green">+1 Green</button>
-      <button class="chipButton" data-action="remove" data-color="Green">-1 Green</button>
+      <button class="chipButton" data-action="add" data-color="Green">Take Green</button>
+      <button class="chipButton" data-action="remove" data-color="Green">Remove Green</button>
     </div>
 
     <div class="row">
       <span id="player1BlueChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Blue">+1 Blue</button>
-      <button class="chipButton" data-action="remove" data-color="Blue">-1 Blue</button>
+      <button class="chipButton" data-action="add" data-color="Blue">Take Blue</button>
+      <button class="chipButton" data-action="remove" data-color="Blue">Remove Blue</button>
     </div>
 
     <div class="row">
       <span id="player1BrownChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Brown">+1 Brown</button>
-      <button class="chipButton" data-action="remove" data-color="Brown">-1 Brown</button>
+      <button class="chipButton" data-action="add" data-color="Brown">Take Brown</button>
+      <button class="chipButton" data-action="remove" data-color="Brown">Remove Brown</button>
     </div>
 
     <div class="row">
       <span id="player1WhiteChip">0</span>
-      <button class="chipButton" data-action="add" data-color="White">+1 White</button>
-      <button class="chipButton" data-action="remove" data-color="White">-1 White</button>
+      <button class="chipButton" data-action="add" data-color="White">Take White</button>
+      <button class="chipButton" data-action="remove" data-color="White">Remove White</button>
     </div>
 
     <div class="row">
       <span id="player1WildChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Wild">+1 Wild</button>
-      <button class="chipButton" data-action="remove" data-color="Wild">-1 Wild</button>
+      <button class="chipButton" data-action="add" data-color="Wild">Take Wild</button>
+      <button class="chipButton" data-action="remove" data-color="Wild">Remove Wild</button>
     </div>
   </section>
+
+  <div id="takePanel" class="panel">
+    <div>Selected: <span id="selectedText">none</span></div>
+    <button id="confirmTake">Confirm Take</button>
+    <button id="clearTake">Clear</button>
+    <div id="takeError"></div>
+  </div>
 
   <section id = "banker" class="panel">
     <div class="row">
