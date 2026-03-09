@@ -1,0 +1,52 @@
+#marketCards{
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.card{
+    font-family: Arial, Helvetica, sans-serif;
+    border: 2px solid #333;
+    border-radius: 14px;
+    background: #f8f3ea;
+    padding: 12px;
+}
+
+.card-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-points{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.card-bonus{
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.card-costs{
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cost{
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: white;
+    font-size: 14px;
+}
+
+.red {background: #c94a4a;}
+.green {background: #4f9d69;}
+.blue {background: #4a78c9;}
+.black {background: black;}
+.white {background: azure; color: black;}

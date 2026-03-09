@@ -1,9 +1,223 @@
-const COLORS = ["Red", "Green", "Blue", "Brown", "White", "Wild"];
+const COLORS = ["Red", "Green", "Blue", "Black", "White", "Wild"];
 
 const state = {
   player1: Object.fromEntries(COLORS.map(c => [c, 0])),
-  bank: { Red: 7, Green: 7, Blue: 7, Brown: 7, White: 7, Wild: 5 }
+  bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 }
 };
+
+const marketCards = [
+  {
+    id: 1,
+    level: 1,
+    color: "Red",
+    points: 1,
+    cost: {
+      Red: 0,
+      Green: 0,
+      Blue: 0,
+      Black: 0,
+      White: 4
+    }
+  },
+
+  {
+    id: 2,
+    level: 1,
+    color: "Black",
+    points: 0,
+    cost: {
+      Red: 1,
+      Green: 1,
+      Blue: 1,
+      Black: 0,
+      White: 1
+    }
+  },
+
+  {
+    id: 3,
+    level: 1,
+    color: "Blue",
+    points: 0,
+    cost: {
+      Red: 2,
+      Green: 2,
+      Blue: 0,
+      Black: 0,
+      White: 1
+    }
+  },
+
+  {
+    id: 4,
+    level: 1,
+    color: "Green",
+    points: 0,
+    cost: {
+      Red: 1,
+      Green: 0,
+      Blue: 1,
+      Black: 1,
+      White: 1
+    }
+  },
+
+  {
+    id: 5,
+    level: 1,
+    color: "White",
+    points: 0,
+    cost: {
+      Red: 0,
+      Green: 2,
+      Blue: 2,
+      Black: 0,
+      White: 0
+    }
+  },
+
+  {
+    id: 41,
+    level: 2,
+    color: "Red",
+    points: 2,
+    cost: {
+      Red: 0,
+      Green: 2,
+      Blue: 4,
+      Black: 0,
+      White: 1
+    }
+  },
+
+  {
+    id: 42,
+    level: 2,
+    color: "Black",
+    points: 2,
+    cost: {
+      Red: 0,
+      Green: 0,
+      Blue: 0,
+      Black: 0,
+      White: 5
+    }
+  },
+
+  {
+    id: 43,
+    level: 3,
+    color: "Blue",
+    points: 3,
+    cost: {
+      Red: 0,
+      Green: 0,
+      Blue: 6,
+      Black: 0,
+      White: 0
+    }
+  },
+
+  {
+    id: 44,
+    level: 2,
+    color: "Green",
+    points: 2,
+    cost: {
+      Red: 0,
+      Green: 3,
+      Blue: 5,
+      Black: 0,
+      White: 0
+    }
+  },
+
+  {
+    id: 45,
+    level: 2,
+    color: "White",
+    points: 1,
+    cost: {
+      Red: 3,
+      Green: 0,
+      Blue: 3,
+      Black: 0,
+      White: 2
+    }
+  },
+
+  {
+    id: 71,
+    level: 3,
+    color: "Red",
+    points: 4,
+    cost: {
+      Red: 0,
+      Green: 7,
+      Blue: 0,
+      Black: 0,
+      White: 0
+    }
+  },
+
+  {
+    id: 72,
+    level: 3,
+    color: "Black",
+    points: 3,
+    cost: {
+      Red: 3,
+      Green: 5,
+      Blue: 3,
+      Black: 0,
+      White: 3
+    }
+  },
+
+  {
+    id: 73,
+    level: 3,
+    color: "Blue",
+    points: 4,
+    cost: {
+      Red: 0,
+      Green: 0,
+      Blue: 0,
+      Black: 0,
+      White: 7
+    }
+  },
+
+  {
+    id: 74,
+    level: 2,
+    color: "Green",
+    points: 5,
+    cost: {
+      Red: 0,
+      Green: 3,
+      Blue: 7,
+      Black: 0,
+      White: 0
+    }
+  },
+
+  {
+    id: 75,
+    level: 2,
+    color: "White",
+    points: 4,
+    cost: {
+      Red: 3,
+      Green: 0,
+      Blue: 0,
+      Black: 6,
+      White: 3
+    }
+  },
+
+
+];
 
 const selected = Object.fromEntries(COLORS.map(c => [c, 0]));
 
@@ -34,7 +248,6 @@ function render(){
     (player1TotalChip + selectedTotalChip > 10) ||
     (!isValidTakeSelection());
 
-  // Clear (optional), 
   clearButton.disabled = (selectedTotalChip === 0);
 
   document.querySelectorAll("#player1 .chipButton").forEach(btn => {
@@ -51,6 +264,8 @@ function render(){
       btn.disabled = state.player1[color] <= 0;
     }
   });
+
+  renderMarket();
 }
 
 function isValidTakeSelection(){
@@ -120,6 +335,38 @@ playerSection.addEventListener("click", (e) => {
     render();
   }
 });
+
+function createCardHTML(card, index) {
+  const costHTML = Object.entries(card.cost)
+    .filter(([color, amount]) => amount > 0)
+    .map(([color, amount]) => {
+      return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
+    })
+    .join("");
+
+  return `
+    <div class="card" data-index="${index}">
+      <div class="card-top">
+        <span class="card-points">${card.points}</span>
+        <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
+      </div>
+      <div class="card-middle">
+        <div>Level ${card.level}</div>
+      </div>
+      <div class="card-costs">
+        ${costHTML}
+      </div>
+      <button class="buyCardButton" data-index="${index}">Buy</button>
+    </div>
+  `;
+}
+
+function renderMarket() {
+  const marketEl = document.querySelector("#marketCards");
+  marketEl.innerHTML = marketCards
+    .map((card, index) => createCardHTML(card, index))
+    .join("");
+}
 
 confirmButton.addEventListener("click", confirmTake);
 clearButton.addEventListener("click", clearSelection);

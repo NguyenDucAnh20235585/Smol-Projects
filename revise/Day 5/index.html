@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
+
 <body>
   <section id = "player1" class="panel">
     <div class="row">
@@ -26,9 +29,9 @@
     </div>
 
     <div class="row">
-      <span id="player1BrownChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Brown">Take Brown</button>
-      <button class="chipButton" data-action="remove" data-color="Brown">Remove Brown</button>
+      <span id="player1BlackChip">0</span>
+      <button class="chipButton" data-action="add" data-color="Black">Take Black</button>
+      <button class="chipButton" data-action="remove" data-color="Black">Remove Black</button>
     </div>
 
     <div class="row">
@@ -65,7 +68,7 @@
     </div>
 
     <div class="row">
-      <span id="bankRemainingBrownChip">7</span>
+      <span id="bankRemainingBlackChip">7</span>
     </div>
 
     <div class="row">
@@ -75,6 +78,11 @@
     <div class="row">
       <span id="bankRemainingWildChip">5</span>
     </div>
+  </section>
+
+  <section id="market">
+    <h2>Market</h2>
+    <div id="marketCards"></div>
   </section>
 
 <script src="index.js"></script>
