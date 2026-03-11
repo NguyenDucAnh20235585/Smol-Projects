@@ -387,6 +387,7 @@ function createCardHTML(card, index) {
 
 const marketCardsEl = document.querySelector("#marketCards");
 
+//important
 marketCardsEl.addEventListener("click", (e) => {
   const btn = e.target.closest(".buyCardButton");
   if (!btn) return;
@@ -400,6 +401,8 @@ marketCardsEl.addEventListener("click", (e) => {
   }
 
   payForCard(card);
+  applyCardReward(card);
+  marketCards.splice(index, 1);
   render();
 });
 
@@ -438,6 +441,12 @@ function payForCard(card) {
       state.bank.Wild += stillMissing;
     }
   }
+}
+
+function applyCardReward(card) {
+  state.player1VictoryPoints += card.points;
+  state.player1BonusChip[card.color] += 1;
+  render();
 }
 
 function renderMarket() {
