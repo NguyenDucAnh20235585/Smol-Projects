@@ -1,10 +1,16 @@
 const COLORS = ["Red", "Green", "Blue", "Black", "White", "Wild"];
 
+const BONUS_COLORS = ["Red", "Green", "Blue", "Black", "White"];
+
 const state = {
   player1: Object.fromEntries(COLORS.map(c => [c, 0])),
   bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 }
 };
 
+state.player1VictoryPoints = 2;
+state.player1BonusChip = Object.fromEntries(BONUS_COLORS.map(c => [c, 0]));
+
+//basic card
 const marketCards = [
   {
     id: 1,
@@ -226,6 +232,16 @@ const selectedTextEl = document.querySelector("#selectedText");
 const confirmButton = document.querySelector("#confirmTake");
 const clearButton = document.querySelector("#clearTake");
 
+//bonusChip
+const player1VictoryPointsEl = document.querySelector("#player1VictoryPoints");
+
+const bonusChipEl = document.querySelector("#bonusChip");
+const player1RedBonusEl = document.querySelector("#player1RedBonus");
+const player1GreenBonusEl = document.querySelector("#player1GreenBonus");
+const player1BlueBonusEl = document.querySelector("#player1BlueBonus");
+const player1BlackBonusEl = document.querySelector("#player1BlackBonus");
+const player1WhiteBonusEl = document.querySelector("#player1WhiteBonus");
+
 function totalChip(obj){
   return Object.values(obj).reduce((a, b) => a + b, 0);
 }
@@ -264,6 +280,14 @@ function render(){
       btn.disabled = state.player1[color] <= 0;
     }
   });
+
+  player1VictoryPointsEl.textContent = state.player1VictoryPoints;
+
+  player1RedBonusEl.textContent = state.player1BonusChip.Red;
+  player1GreenBonusEl.textContent = state.player1BonusChip.Green;
+  player1BlueBonusEl.textContent = state.player1BonusChip.Blue;
+  player1BlackBonusEl.textContent = state.player1BonusChip.Black;
+  player1WhiteBonusEl.textContent = state.player1BonusChip.White;
 
   renderMarket();
 }
@@ -359,6 +383,61 @@ function createCardHTML(card, index) {
       <button class="buyCardButton" data-index="${index}">Buy</button>
     </div>
   `;
+}
+
+const marketCardsEl = document.querySelector("#marketCards");
+
+marketCardsEl.addEventListener("click", (e) => {
+  const btn = e.target.closest(".buyCardButton");
+  if (!btn) return;
+
+  const index = Number(btn.dataset.index);
+  const card = marketCards[index];
+
+  if (!canAffordCard(card)) {
+    console.log("Not enough chips");
+    return;
+  }
+
+  payForCard(card);
+  render();
+});
+
+function canAffordCard(card) {
+  let wildNeeded = 0;
+
+  for (const color of BONUS_COLORS) {
+    const cost = card.cost[color] || 0;
+    const bonus = state.player1BonusChip[color] || 0;
+    const chips = state.player1[color] || 0;
+
+    const discountedCost = Math.max(0, cost - bonus);
+    const missing = Math.max(0, discountedCost - chips);
+
+    wildNeeded += missing;
+  }
+
+  return wildNeeded <= state.player1.Wild;
+}
+
+function payForCard(card) {
+  for (const color of BONUS_COLORS) {
+    const cost = card.cost[color] || 0;
+    const bonus = state.player1BonusChip[color] || 0;
+
+    const discountedCost = Math.max(0, cost - bonus);
+
+    const useNormalChips = Math.min(state.player1[color], discountedCost);
+    state.player1[color] -= useNormalChips;
+    state.bank[color] += useNormalChips;
+
+    const stillMissing = discountedCost - useNormalChips;
+
+    if (stillMissing > 0) {
+      state.player1.Wild -= stillMissing;
+      state.bank.Wild += stillMissing;
+    }
+  }
 }
 
 function renderMarket() {
