@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body>
   <section id = "player1" class="panel">
 
@@ -15,12 +14,17 @@
       <span id="player1VictoryPoints">0</span>
     </div>
 
+    <section id="ownedCardsPanel" class="panel">
+      <h2>Owned Cards</h2>
+      <div id="player1OwnedCards"></div>
+    </section>
+
     <div class="column" id="bonusChip">
-    <div>Red bonus: <span id="player1RedBonus">0</span></div>
-    <div>Green bonus: <span id="player1GreenBonus">0</span></div>
-    <div>Blue bonus: <span id="player1BlueBonus">0</span></div>
-    <div>Black bonus: <span id="player1BlackBonus">0</span></div>
-    <div>White bonus: <span id="player1WhiteBonus">0</span></div>
+      <div>Red bonus: <span id="player1RedBonus">0</span></div>
+      <div>Green bonus: <span id="player1GreenBonus">0</span></div>
+      <div>Blue bonus: <span id="player1BlueBonus">0</span></div>
+      <div>Black bonus: <span id="player1BlackBonus">0</span></div>
+      <div>White bonus: <span id="player1WhiteBonus">0</span></div>
     </div>
 
     <div class="row">
@@ -54,9 +58,7 @@
     </div>
 
     <div class="row">
-      <span id="player1WildChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Wild">Take Wild</button>
-      <button class="chipButton" data-action="remove" data-color="Wild">Remove Wild</button>
+      <span id="player1WildChip">Wild Chip: 0</span>
     </div>
   </section>
 
@@ -66,6 +68,18 @@
     <button id="clearTake">Clear</button>
     <div id="takeError"></div>
   </div>
+
+  <div id="reservePanel" class="panel">
+    <button id="reserveModeButton">Reserve Card</button>
+    <button id="confirmReserve">Confirm Reserve</button>
+    <div>Selected reserve card: <span id="selectedReserveText">none</span></div>
+  </div>
+
+    <section id="ReservedCardsPanel" class="panel">
+      <h2>Reserved Cards</h2>
+      <div id="player1ReservedCards"></div>
+    </section>
+
 
   <section id = "banker" class="panel">
     <div class="row">

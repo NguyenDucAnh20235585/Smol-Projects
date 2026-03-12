@@ -1,14 +1,23 @@
-const COLORS = ["Red", "Green", "Blue", "Black", "White", "Wild"];
+const TAKE_COLORS = ["Red", "Green", "Blue", "Black", "White"];
+const ALL_COLORS = ["Red", "Green", "Blue", "Black", "White", "Wild"];
 
 const BONUS_COLORS = ["Red", "Green", "Blue", "Black", "White"];
 
 const state = {
-  player1: Object.fromEntries(COLORS.map(c => [c, 0])),
+  player1: Object.fromEntries(ALL_COLORS.map(c => [c, 0])),
   bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 }
 };
 
-state.player1VictoryPoints = 2;
+//vp state
+state.player1VictoryPoints = 0;
+//bonus chip earned from cards
 state.player1BonusChip = Object.fromEntries(BONUS_COLORS.map(c => [c, 0]));
+//show cards earned
+state.player1OwnedCards = [];
+//show cards reserved and buttons
+state.player1ReservedCards = [];
+state.currentAction = "take";
+state.selectedReserveIndex = null;
 
 //basic card
 const marketCards = [
@@ -225,12 +234,16 @@ const marketCards = [
 
 ];
 
-const selected = Object.fromEntries(COLORS.map(c => [c, 0]));
+const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
 const playerSection = document.querySelector("#player1");
 const selectedTextEl = document.querySelector("#selectedText");
 const confirmButton = document.querySelector("#confirmTake");
 const clearButton = document.querySelector("#clearTake");
+
+const reserveModeButton = document.querySelector("#reserveModeButton");
+const confirmReserveButton = document.querySelector("#confirmReserve");
+const selectedReserveTextEl = document.querySelector("#selectedReserveText");
 
 //bonusChip
 const player1VictoryPointsEl = document.querySelector("#player1VictoryPoints");
@@ -246,14 +259,16 @@ function totalChip(obj){
   return Object.values(obj).reduce((a, b) => a + b, 0);
 }
 
-function render(){
-  for (const c of COLORS) {
+function render() {
+  for (const c of ALL_COLORS) {
     document.querySelector(`#player1${c}Chip`).textContent = state.player1[c];
     document.querySelector(`#bankRemaining${c}Chip`).textContent = state.bank[c];
   }
 
   const parts = [];
-  for (const c of COLORS) if (selected[c] > 0) parts.push(`${c} x${selected[c]}`);
+  for (const c of TAKE_COLORS) {
+    if (selected[c] > 0) parts.push(`${c} x${selected[c]}`);
+  }
   selectedTextEl.textContent = parts.length ? parts.join(", ") : "none";
 
   const player1TotalChip = totalChip(state.player1);
@@ -270,16 +285,36 @@ function render(){
     const action = btn.dataset.action;
     const color = btn.dataset.color;
 
-    if (action === "add"){
+    if (color === "Wild") {
+      btn.disabled = true;
+      return;
+    }
+
+    if (action === "add") {
       const noSpace = player1TotalChip >= 10;
       const remainingToSelect = state.bank[color] - selected[color];
       btn.disabled = noSpace || (remainingToSelect <= 0);
     }
 
-    if (action === "remove"){
+    if (action === "remove") {
       btn.disabled = state.player1[color] <= 0;
     }
   });
+
+  if (state.selectedReserveIndex === null) {
+    selectedReserveTextEl.textContent = "none";
+  } else {
+    const card = marketCards[state.selectedReserveIndex];
+    selectedReserveTextEl.textContent = card
+      ? `${card.color} | Level ${card.level} | ${card.points} VP`
+      : "none";
+  }
+
+  confirmReserveButton.disabled =
+    state.currentAction !== "reserve" ||
+    state.selectedReserveIndex === null ||
+    totalChip(state.player1) >= 10 ||
+    state.bank.Wild <= 0;
 
   player1VictoryPointsEl.textContent = state.player1VictoryPoints;
 
@@ -290,15 +325,17 @@ function render(){
   player1WhiteBonusEl.textContent = state.player1BonusChip.White;
 
   renderMarket();
+  renderOwnedCards();
+  renderReservedCards();
 }
 
 function isValidTakeSelection(){
   const totalSel = totalChip(selected);
   if (totalSel === 0) return true; 
 
-  const pickedColors = COLORS.filter(c => selected[c] > 0);
+  const pickedColors = TAKE_COLORS.filter(c => selected[c] > 0);
   const distinct = pickedColors.length;
-  const maxPerColor = Math.max(...COLORS.map(c => selected[c]));
+  const maxPerColor = Math.max(...TAKE_COLORS.map(c => selected[c]));
 
   const threeChipDistinct = totalSel <= 3 && maxPerColor === 1;
 
@@ -315,7 +352,7 @@ function confirmTake(){
   const selectedTotalChip = totalChip(selected);
   if (player1TotalChip + selectedTotalChip > 10) return;
 
-  for (const c of COLORS) {
+  for (const c of TAKE_COLORS) {
     const k = selected[c];
     if (k <= 0) continue;
     if (state.bank[c] < k) continue;
@@ -328,7 +365,7 @@ function confirmTake(){
 }
 
 function clearSelection(){
-  for (const c of COLORS) selected[c] = 0;
+  for (const c of TAKE_COLORS) selected[c] = 0;
   render();
 }
 
@@ -389,6 +426,16 @@ const marketCardsEl = document.querySelector("#marketCards");
 
 //important
 marketCardsEl.addEventListener("click", (e) => {
+  const cardEl = e.target.closest(".card");
+  if (!cardEl) return;
+
+  if (state.currentAction === "reserve") {
+    const index = Number(cardEl.dataset.index);
+    state.selectedReserveIndex = index;
+    render();
+    return;
+  }
+
   const btn = e.target.closest(".buyCardButton");
   if (!btn) return;
 
@@ -403,6 +450,7 @@ marketCardsEl.addEventListener("click", (e) => {
   payForCard(card);
   applyCardReward(card);
   marketCards.splice(index, 1);
+  state.player1OwnedCards.push(card);
   render();
 });
 
@@ -446,7 +494,73 @@ function payForCard(card) {
 function applyCardReward(card) {
   state.player1VictoryPoints += card.points;
   state.player1BonusChip[card.color] += 1;
+}
+
+function renderOwnedCards() {
+  const ownedEl = document.querySelector("#player1OwnedCards");
+
+  ownedEl.innerHTML = state.player1OwnedCards
+    .map(card => {
+      return `
+        <div class="card">
+          <div class="card-top">
+            <span class="card-points">${card.points}</span>
+            <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
+          </div>
+          <div class="card-middle">
+            <div>Level ${card.level}</div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function enterReserveMode() {
+  state.currentAction = "reserve";
+  state.selectedReserveIndex = null;
   render();
+}
+
+function confirmReserveCard() {
+  if (state.currentAction !== "reserve") return;
+  if (state.selectedReserveIndex === null) return;
+  if (totalChip(state.player1) >= 10) return;
+  if (state.bank.Wild <= 0) return;
+
+  const card = marketCards[state.selectedReserveIndex];
+  if (!card) return;
+
+  state.player1ReservedCards.push(card);
+  marketCards.splice(state.selectedReserveIndex, 1);
+
+  state.player1.Wild += 1;
+  state.bank.Wild -= 1;
+
+  state.selectedReserveIndex = null;
+  state.currentAction = "take";
+
+  render();
+}
+
+function renderReservedCards() {
+  const reservedEl = document.querySelector("#player1ReservedCards");
+
+  reservedEl.innerHTML = state.player1ReservedCards
+    .map(card => {
+      return `
+        <div class="card">
+          <div class="card-top">
+            <span class="card-points">${card.points}</span>
+            <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
+          </div>
+          <div class="card-middle">
+            <div>Level ${card.level}</div>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 function renderMarket() {
@@ -458,5 +572,7 @@ function renderMarket() {
 
 confirmButton.addEventListener("click", confirmTake);
 clearButton.addEventListener("click", clearSelection);
+reserveModeButton.addEventListener("click", enterReserveMode);
+confirmReserveButton.addEventListener("click", confirmReserveCard);
 
 render();
