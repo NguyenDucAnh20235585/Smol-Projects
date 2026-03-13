@@ -314,7 +314,7 @@ function render() {
     state.currentAction !== "reserve" ||
     state.selectedReserveIndex === null ||
     totalChip(state.player1) >= 10 ||
-    state.bank.Wild <= 0;
+    state.player1ReservedCards.length >= 3;
 
   player1VictoryPointsEl.textContent = state.player1VictoryPoints;
 
@@ -526,7 +526,7 @@ function confirmReserveCard() {
   if (state.currentAction !== "reserve") return;
   if (state.selectedReserveIndex === null) return;
   if (totalChip(state.player1) >= 10) return;
-  if (state.bank.Wild <= 0) return;
+  if (state.player1ReservedCards.length >= 3) return;
 
   const card = marketCards[state.selectedReserveIndex];
   if (!card) return;
@@ -534,8 +534,10 @@ function confirmReserveCard() {
   state.player1ReservedCards.push(card);
   marketCards.splice(state.selectedReserveIndex, 1);
 
-  state.player1.Wild += 1;
-  state.bank.Wild -= 1;
+  if (state.bank.Wild > 0) {
+    state.player1.Wild += 1;
+    state.bank.Wild -= 1;
+  }
 
   state.selectedReserveIndex = null;
   state.currentAction = "take";
