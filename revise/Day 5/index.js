@@ -3,30 +3,36 @@ const ALL_COLORS = ["Red", "Green", "Blue", "Black", "White", "Wild"];
 
 const BONUS_COLORS = ["Red", "Green", "Blue", "Black", "White"];
 
+function createPlayer() {
+  return {
+    chips: Object.fromEntries(ALL_COLORS.map(c => [c, 0])),
+    victoryPoints: 0,
+    bonusChip: Object.fromEntries(BONUS_COLORS.map(c => [c, 0])),
+    ownedCards: [],
+    reservedCards: []
+  };
+}
+
 const state = {
-  player1: Object.fromEntries(ALL_COLORS.map(c => [c, 0])),
-  bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 }
+  players: [createPlayer(), createPlayer()],
+  currentPlayerIndex: 0,
+  bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 },
+  currentAction: "take",
+  selectedReserveIndex: null
 };
 
-//vp state
-state.player1VictoryPoints = 0;
-//bonus chip earned from cards
-state.player1BonusChip = Object.fromEntries(BONUS_COLORS.map(c => [c, 0]));
-//show cards earned
-state.player1OwnedCards = [];
-//show cards reserved and buttons
-state.player1ReservedCards = [];
-state.currentAction = "take";
-state.selectedReserveIndex = null;
+function getCurrentPlayer() {
+  return state.players[state.currentPlayerIndex];
+}
 
 //basic card
 const marketCards = [
-  {
+ {
     id: 1,
     level: 1,
     color: "Red",
     points: 1,
-    cost: {
+    cost:{
       Red: 0,
       Green: 0,
       Blue: 0,
@@ -35,12 +41,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 2,
     level: 1,
     color: "Black",
     points: 0,
-    cost: {
+    cost:{
       Red: 1,
       Green: 1,
       Blue: 1,
@@ -49,12 +55,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 3,
     level: 1,
     color: "Blue",
     points: 0,
-    cost: {
+    cost:{
       Red: 2,
       Green: 2,
       Blue: 0,
@@ -63,12 +69,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 4,
     level: 1,
     color: "Green",
     points: 0,
-    cost: {
+    cost:{
       Red: 1,
       Green: 0,
       Blue: 1,
@@ -77,12 +83,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 5,
     level: 1,
     color: "White",
     points: 0,
-    cost: {
+    cost:{
       Red: 0,
       Green: 2,
       Blue: 2,
@@ -91,12 +97,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 41,
     level: 2,
     color: "Red",
     points: 2,
-    cost: {
+    cost:{
       Red: 0,
       Green: 2,
       Blue: 4,
@@ -105,12 +111,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 42,
     level: 2,
     color: "Black",
     points: 2,
-    cost: {
+    cost:{
       Red: 0,
       Green: 0,
       Blue: 0,
@@ -119,12 +125,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 43,
     level: 3,
     color: "Blue",
     points: 3,
-    cost: {
+    cost:{
       Red: 0,
       Green: 0,
       Blue: 6,
@@ -133,12 +139,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 44,
     level: 2,
     color: "Green",
     points: 2,
-    cost: {
+    cost:{
       Red: 0,
       Green: 3,
       Blue: 5,
@@ -147,12 +153,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 45,
     level: 2,
     color: "White",
     points: 1,
-    cost: {
+    cost:{
       Red: 3,
       Green: 0,
       Blue: 3,
@@ -161,12 +167,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 71,
     level: 3,
     color: "Red",
     points: 4,
-    cost: {
+    cost:{
       Red: 0,
       Green: 7,
       Blue: 0,
@@ -175,12 +181,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 72,
     level: 3,
     color: "Black",
     points: 3,
-    cost: {
+    cost:{
       Red: 3,
       Green: 5,
       Blue: 3,
@@ -189,12 +195,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 73,
     level: 3,
     color: "Blue",
     points: 4,
-    cost: {
+    cost:{
       Red: 0,
       Green: 0,
       Blue: 0,
@@ -203,12 +209,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 74,
     level: 2,
     color: "Green",
     points: 5,
-    cost: {
+    cost:{
       Red: 0,
       Green: 3,
       Blue: 7,
@@ -217,12 +223,12 @@ const marketCards = [
     }
   },
 
-  {
+ {
     id: 75,
     level: 2,
     color: "White",
     points: 4,
-    cost: {
+    cost:{
       Red: 3,
       Green: 0,
       Blue: 0,
@@ -244,6 +250,7 @@ const clearButton = document.querySelector("#clearTake");
 const reserveModeButton = document.querySelector("#reserveModeButton");
 const confirmReserveButton = document.querySelector("#confirmReserve");
 const selectedReserveTextEl = document.querySelector("#selectedReserveText");
+const currentPlayerLabelEl = document.querySelector("#currentPlayerLabel");
 
 //bonusChip
 const player1VictoryPointsEl = document.querySelector("#player1VictoryPoints");
@@ -259,51 +266,54 @@ function totalChip(obj){
   return Object.values(obj).reduce((a, b) => a + b, 0);
 }
 
-function render() {
-  for (const c of ALL_COLORS) {
-    document.querySelector(`#player1${c}Chip`).textContent = state.player1[c];
+function render(){
+  const player = getCurrentPlayer();
+
+  for (const c of ALL_COLORS){
+    document.querySelector(`#player1${c}Chip`).textContent = player.chips[c];
     document.querySelector(`#bankRemaining${c}Chip`).textContent = state.bank[c];
   }
 
   const parts = [];
-  for (const c of TAKE_COLORS) {
+  for (const c of TAKE_COLORS){
     if (selected[c] > 0) parts.push(`${c} x${selected[c]}`);
   }
   selectedTextEl.textContent = parts.length ? parts.join(", ") : "none";
 
-  const player1TotalChip = totalChip(state.player1);
+  const playerTotalChip = totalChip(player.chips);
   const selectedTotalChip = totalChip(selected);
 
   confirmButton.disabled =
-    (selectedTotalChip === 0) ||
-    (player1TotalChip + selectedTotalChip > 10) ||
-    (!isValidTakeSelection());
+  (state.currentAction !== "take") ||
+  (selectedTotalChip === 0) ||
+  (playerTotalChip + selectedTotalChip > 10) ||
+  (!isValidTakeSelection());
 
   clearButton.disabled = (selectedTotalChip === 0);
 
-  document.querySelectorAll("#player1 .chipButton").forEach(btn => {
+  document.querySelectorAll("#player1 .chipButton").forEach(btn =>{
     const action = btn.dataset.action;
     const color = btn.dataset.color;
 
-    if (color === "Wild") {
+    if (color === "Wild"){
       btn.disabled = true;
       return;
     }
 
-    if (action === "add") {
-      const noSpace = player1TotalChip >= 10;
+    if (action === "add"){
+      const noSpace = playerTotalChip >= 10;
       const remainingToSelect = state.bank[color] - selected[color];
       btn.disabled = noSpace || (remainingToSelect <= 0);
     }
 
-    if (action === "remove") {
-      btn.disabled = state.player1[color] <= 0;
+    if (action === "remove"){
+      btn.disabled = player.chips[color] <= 0;
     }
   });
 
-  if (state.selectedReserveIndex === null) {
+  if (state.selectedReserveIndex === null){
     selectedReserveTextEl.textContent = "none";
-  } else {
+  } else{
     const card = marketCards[state.selectedReserveIndex];
     selectedReserveTextEl.textContent = card
       ? `${card.color} | Level ${card.level} | ${card.points} VP`
@@ -313,16 +323,18 @@ function render() {
   confirmReserveButton.disabled =
     state.currentAction !== "reserve" ||
     state.selectedReserveIndex === null ||
-    totalChip(state.player1) >= 10 ||
-    state.player1ReservedCards.length >= 3;
+    totalChip(player.chips) >= 10 ||
+    player.reservedCards.length >= 3;
 
-  player1VictoryPointsEl.textContent = state.player1VictoryPoints;
+  player1VictoryPointsEl.textContent = player.victoryPoints;
 
-  player1RedBonusEl.textContent = state.player1BonusChip.Red;
-  player1GreenBonusEl.textContent = state.player1BonusChip.Green;
-  player1BlueBonusEl.textContent = state.player1BonusChip.Blue;
-  player1BlackBonusEl.textContent = state.player1BonusChip.Black;
-  player1WhiteBonusEl.textContent = state.player1BonusChip.White;
+  player1RedBonusEl.textContent = player.bonusChip.Red;
+  player1GreenBonusEl.textContent = player.bonusChip.Green;
+  player1BlueBonusEl.textContent = player.bonusChip.Blue;
+  player1BlackBonusEl.textContent = player.bonusChip.Black;
+  player1WhiteBonusEl.textContent = player.bonusChip.White;
+  
+  currentPlayerLabelEl.textContent = `Player ${state.currentPlayerIndex + 1}`;
 
   renderMarket();
   renderOwnedCards();
@@ -347,41 +359,58 @@ function isValidTakeSelection(){
   return threeChipDistinct || twoSame;
 }
 
-function confirmTake(){
-  const player1TotalChip = totalChip(state.player1);
-  const selectedTotalChip = totalChip(selected);
-  if (player1TotalChip + selectedTotalChip > 10) return;
+function endTurn(){
+  clearSelectionOnly();
+  state.selectedReserveIndex = null;
+  state.currentAction = "take";
+  state.currentPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  render();
+}
 
-  for (const c of TAKE_COLORS) {
+function clearSelectionOnly(){
+  for (const c of TAKE_COLORS) selected[c] = 0;
+}
+
+function confirmTake(){
+  const player = getCurrentPlayer();
+  const playerTotalChip = totalChip(player.chips);
+  const selectedTotalChip = totalChip(selected);
+
+  if (playerTotalChip + selectedTotalChip > 10) return;
+
+  for (const c of TAKE_COLORS){
     const k = selected[c];
     if (k <= 0) continue;
     if (state.bank[c] < k) continue;
 
     state.bank[c] -= k;
-    state.player1[c] += k;
+    player.chips[c] += k;
     selected[c] = 0;
   }
-  render();
+
+  endTurn();
 }
 
 function clearSelection(){
-  for (const c of TAKE_COLORS) selected[c] = 0;
+  clearSelectionOnly();
   render();
 }
 
-playerSection.addEventListener("click", (e) => {
+playerSection.addEventListener("click", (e) =>{
   const btn = e.target.closest(".chipButton");
   if (!btn) return;
+
+  if (state.currentAction !== "take") return;
 
   const action = btn.dataset.action;
   const color = btn.dataset.color;
 
-  if (action === "add") {
+  if (action === "add"){
   if ((state.bank[color] - selected[color]) <= 0) return;
 
   // thử chọn thêm 1 rồi check xem imply logic rule splendor correct ch
   selected[color] += 1;
-  if (!isValidTakeSelection()) {
+  if (!isValidTakeSelection()){
     selected[color] -= 1;
     return;
   }
@@ -389,18 +418,19 @@ playerSection.addEventListener("click", (e) => {
   render();
 }
 
-  if (action === "remove") {
-    if (state.player1[color] <= 0) return;
-    state.player1[color] -= 1;
-    state.bank[color] += 1;
-    render();
-  }
+if (action === "remove"){
+  const player = getCurrentPlayer();
+  if (player.chips[color] <= 0) return;
+  player.chips[color] -= 1;
+  state.bank[color] += 1;
+  render();
+}
 });
 
-function createCardHTML(card, index) {
+function createCardHTML(card, index){
   const costHTML = Object.entries(card.cost)
     .filter(([color, amount]) => amount > 0)
-    .map(([color, amount]) => {
+    .map(([color, amount]) =>{
       return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
     })
     .join("");
@@ -425,11 +455,11 @@ function createCardHTML(card, index) {
 const marketCardsEl = document.querySelector("#marketCards");
 
 //important
-marketCardsEl.addEventListener("click", (e) => {
+marketCardsEl.addEventListener("click", (e) =>{
   const cardEl = e.target.closest(".card");
   if (!cardEl) return;
 
-  if (state.currentAction === "reserve") {
+  if (state.currentAction === "reserve"){
     const index = Number(cardEl.dataset.index);
     state.selectedReserveIndex = index;
     render();
@@ -442,7 +472,7 @@ marketCardsEl.addEventListener("click", (e) => {
   const index = Number(btn.dataset.index);
   const card = marketCards[index];
 
-  if (!canAffordCard(card)) {
+  if (!canAffordCard(card)){
     console.log("Not enough chips");
     return;
   }
@@ -450,17 +480,19 @@ marketCardsEl.addEventListener("click", (e) => {
   payForCard(card);
   applyCardReward(card);
   marketCards.splice(index, 1);
-  state.player1OwnedCards.push(card);
-  render();
+  const player = getCurrentPlayer();
+  player.ownedCards.push(card);
+  endTurn();
 });
 
-function canAffordCard(card) {
+function canAffordCard(card){
+  const player = getCurrentPlayer();
   let wildNeeded = 0;
 
-  for (const color of BONUS_COLORS) {
+  for (const color of BONUS_COLORS){
     const cost = card.cost[color] || 0;
-    const bonus = state.player1BonusChip[color] || 0;
-    const chips = state.player1[color] || 0;
+    const bonus = player.bonusChip[color] || 0;
+    const chips = player.chips[color] || 0;
 
     const discountedCost = Math.max(0, cost - bonus);
     const missing = Math.max(0, discountedCost - chips);
@@ -468,39 +500,43 @@ function canAffordCard(card) {
     wildNeeded += missing;
   }
 
-  return wildNeeded <= state.player1.Wild;
+  return wildNeeded <= player.chips.Wild;
 }
 
-function payForCard(card) {
-  for (const color of BONUS_COLORS) {
+function payForCard(card){
+  const player = getCurrentPlayer();
+
+  for (const color of BONUS_COLORS){
     const cost = card.cost[color] || 0;
-    const bonus = state.player1BonusChip[color] || 0;
+    const bonus = player.bonusChip[color] || 0;
 
     const discountedCost = Math.max(0, cost - bonus);
 
-    const useNormalChips = Math.min(state.player1[color], discountedCost);
-    state.player1[color] -= useNormalChips;
+    const useNormalChips = Math.min(player.chips[color], discountedCost);
+    player.chips[color] -= useNormalChips;
     state.bank[color] += useNormalChips;
 
     const stillMissing = discountedCost - useNormalChips;
 
-    if (stillMissing > 0) {
-      state.player1.Wild -= stillMissing;
+    if (stillMissing > 0){
+      player.chips.Wild -= stillMissing;
       state.bank.Wild += stillMissing;
     }
   }
 }
 
-function applyCardReward(card) {
-  state.player1VictoryPoints += card.points;
-  state.player1BonusChip[card.color] += 1;
+function applyCardReward(card){
+  const player = getCurrentPlayer();
+  player.victoryPoints += card.points;
+  player.bonusChip[card.color] += 1;
 }
 
-function renderOwnedCards() {
+function renderOwnedCards(){
+  const player = getCurrentPlayer();
   const ownedEl = document.querySelector("#player1OwnedCards");
 
-  ownedEl.innerHTML = state.player1OwnedCards
-    .map(card => {
+  ownedEl.innerHTML = player.ownedCards
+    .map(card =>{
       return `
         <div class="card">
           <div class="card-top">
@@ -516,40 +552,40 @@ function renderOwnedCards() {
     .join("");
 }
 
-function enterReserveMode() {
+function enterReserveMode(){
   state.currentAction = "reserve";
   state.selectedReserveIndex = null;
   render();
 }
 
-function confirmReserveCard() {
+function confirmReserveCard(){
+  const player = getCurrentPlayer();
+
   if (state.currentAction !== "reserve") return;
   if (state.selectedReserveIndex === null) return;
-  if (totalChip(state.player1) >= 10) return;
-  if (state.player1ReservedCards.length >= 3) return;
+  if (totalChip(player.chips) >= 10) return;
+  if (player.reservedCards.length >= 3) return;
 
   const card = marketCards[state.selectedReserveIndex];
   if (!card) return;
 
-  state.player1ReservedCards.push(card);
+  player.reservedCards.push(card);
   marketCards.splice(state.selectedReserveIndex, 1);
 
-  if (state.bank.Wild > 0) {
-    state.player1.Wild += 1;
+  if (state.bank.Wild > 0){
+    player.chips.Wild += 1;
     state.bank.Wild -= 1;
   }
 
-  state.selectedReserveIndex = null;
-  state.currentAction = "take";
-
-  render();
+  endTurn();
 }
 
-function renderReservedCards() {
+function renderReservedCards(){
+  const player = getCurrentPlayer();
   const reservedEl = document.querySelector("#player1ReservedCards");
 
-  reservedEl.innerHTML = state.player1ReservedCards
-    .map(card => {
+  reservedEl.innerHTML = player.reservedCards
+    .map(card =>{
       return `
         <div class="card">
           <div class="card-top">
@@ -565,7 +601,7 @@ function renderReservedCards() {
     .join("");
 }
 
-function renderMarket() {
+function renderMarket(){
   const marketEl = document.querySelector("#marketCards");
   marketEl.innerHTML = marketCards
     .map((card, index) => createCardHTML(card, index))

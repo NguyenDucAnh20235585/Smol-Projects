@@ -1,0 +1,3 @@
+Begin the turn flow in this week: Grabbing chips, Taking cards, create players, etc...
+Fix some remaining logic: Some malfunctioning button like reserve, etc
+Put the rest of the data to json file
