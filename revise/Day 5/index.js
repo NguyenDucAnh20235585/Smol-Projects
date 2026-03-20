@@ -262,6 +262,13 @@ const player1BlueBonusEl = document.querySelector("#player1BlueBonus");
 const player1BlackBonusEl = document.querySelector("#player1BlackBonus");
 const player1WhiteBonusEl = document.querySelector("#player1WhiteBonus");
 
+//log
+const gameLogEl = document.querySelector("#gameLog");
+
+function setLog(message){
+  gameLogEl.textContent = message;
+}
+
 function totalChip(obj){
   return Object.values(obj).reduce((a, b) => a + b, 0);
 }
@@ -376,7 +383,17 @@ function confirmTake(){
   const playerTotalChip = totalChip(player.chips);
   const selectedTotalChip = totalChip(selected);
 
-  if (playerTotalChip + selectedTotalChip > 10) return;
+  const currentPlayerNumber = state.currentPlayerIndex + 1;
+  const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
+
+  const takenParts = TAKE_COLORS
+    .filter(c => selected[c] > 0)
+    .map(c => `${c} x${selected[c]}`);
+
+  if (playerTotalChip + selectedTotalChip > 10) {
+    setLog(`Player ${state.currentPlayerIndex + 1} cannot take more than 10 chips.`);
+    return;
+  }
 
   for (const c of TAKE_COLORS){
     const k = selected[c];
@@ -388,6 +405,7 @@ function confirmTake(){
     selected[c] = 0;
   }
 
+  setLog(`Player ${currentPlayerNumber} took ${takenParts.join(", ")}. Player ${nextPlayerNumber}'s turn.`);
   endTurn();
 }
 
@@ -473,17 +491,19 @@ marketCardsEl.addEventListener("click", (e) =>{
   const card = marketCards[index];
 
   if (!canAffordCard(card)){
-    console.log("Not enough chips");
-    return;
-  }
+  setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this card.`);
+  return;
+}
 
   payForCard(card);
   applyCardReward(card);
   marketCards.splice(index, 1);
   const player = getCurrentPlayer();
   player.ownedCards.push(card);
+
+  setLog(`Player ${state.currentPlayerIndex + 1} bought a ${card.color} card (${card.points} VP).`);
   endTurn();
-});
+  });
 
 function canAffordCard(card){
   const player = getCurrentPlayer();
@@ -555,6 +575,7 @@ function renderOwnedCards(){
 function enterReserveMode(){
   state.currentAction = "reserve";
   state.selectedReserveIndex = null;
+  setLog(`Player ${state.currentPlayerIndex + 1} is choosing a card to reserve.`);
   render();
 }
 
@@ -576,6 +597,8 @@ function confirmReserveCard(){
     player.chips.Wild += 1;
     state.bank.Wild -= 1;
   }
+
+  setLog(`Player ${state.currentPlayerIndex + 1} reserved a ${card.color} level ${card.level} card.`);
 
   endTurn();
 }
@@ -612,5 +635,6 @@ confirmButton.addEventListener("click", confirmTake);
 clearButton.addEventListener("click", clearSelection);
 reserveModeButton.addEventListener("click", enterReserveMode);
 confirmReserveButton.addEventListener("click", confirmReserveCard);
+setLog("Game started. Player 1's turn.");
 
 render();
