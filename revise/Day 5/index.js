@@ -244,11 +244,13 @@ const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
 const playerSection = document.querySelector("#player1");
 const selectedTextEl = document.querySelector("#selectedText");
+
 const confirmButton = document.querySelector("#confirmTake");
 const clearButton = document.querySelector("#clearTake");
 
 const reserveModeButton = document.querySelector("#reserveModeButton");
 const confirmReserveButton = document.querySelector("#confirmReserve");
+const cancelActionButton = document.querySelector("#cancelAction");
 const selectedReserveTextEl = document.querySelector("#selectedReserveText");
 const currentPlayerLabelEl = document.querySelector("#currentPlayerLabel");
 
@@ -330,8 +332,10 @@ function render(){
   confirmReserveButton.disabled =
     state.currentAction !== "reserve" ||
     state.selectedReserveIndex === null ||
-    totalChip(player.chips) >= 10 ||
     player.reservedCards.length >= 3;
+
+    cancelActionButton.disabled = (state.currentAction === "take");
+    reserveModeButton.disabled = (state.currentAction === "reserve");
 
   player1VictoryPointsEl.textContent = player.victoryPoints;
 
@@ -584,8 +588,9 @@ function confirmReserveCard(){
 
   if (state.currentAction !== "reserve") return;
   if (state.selectedReserveIndex === null) return;
-  if (totalChip(player.chips) >= 10) return;
   if (player.reservedCards.length >= 3) return;
+
+  // fix save card logic
 
   const card = marketCards[state.selectedReserveIndex];
   if (!card) return;
@@ -593,10 +598,10 @@ function confirmReserveCard(){
   player.reservedCards.push(card);
   marketCards.splice(state.selectedReserveIndex, 1);
 
-  if (state.bank.Wild > 0){
-    player.chips.Wild += 1;
-    state.bank.Wild -= 1;
-  }
+  if (state.bank.Wild > 0 && totalChip(player.chips) < 10){
+  player.chips.Wild += 1;
+  state.bank.Wild -= 1;
+}
 
   setLog(`Player ${state.currentPlayerIndex + 1} reserved a ${card.color} level ${card.level} card.`);
 
@@ -631,10 +636,19 @@ function renderMarket(){
     .join("");
 }
 
+function cancelAction(){
+  state.currentAction = "take";
+  state.selectedReserveIndex = null;
+  clearSelectionOnly();
+  setLog(`Player ${state.currentPlayerIndex + 1} cancelled the current action.`);
+  render();
+}
+
 confirmButton.addEventListener("click", confirmTake);
 clearButton.addEventListener("click", clearSelection);
 reserveModeButton.addEventListener("click", enterReserveMode);
 confirmReserveButton.addEventListener("click", confirmReserveCard);
+cancelActionButton.addEventListener("click", cancelAction);
 setLog("Game started. Player 1's turn.");
 
 render();
