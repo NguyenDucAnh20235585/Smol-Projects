@@ -475,6 +475,7 @@ function createCardHTML(card, index){
 }
 
 const marketCardsEl = document.querySelector("#marketCards");
+const reservedCardsEl = document.querySelector("#player1ReservedCards");
 
 //important
 marketCardsEl.addEventListener("click", (e) =>{
@@ -508,6 +509,35 @@ marketCardsEl.addEventListener("click", (e) =>{
   setLog(`Player ${state.currentPlayerIndex + 1} bought a ${card.color} card (${card.points} VP).`);
   endTurn();
   });
+
+  reservedCardsEl.addEventListener("click", (e) =>{
+  const btn = e.target.closest(".buyReservedCardButton");
+  if (!btn) return;
+
+  if (state.currentAction !== "take") return;
+
+  const index = Number(btn.dataset.index);
+  const player = getCurrentPlayer();
+  const card = player.reservedCards[index];
+  if (!card) return;
+
+  if (!canAffordCard(card)){
+    setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this reserved card.`);
+    return;
+  }
+
+  payForCard(card);
+  applyCardReward(card);
+
+  player.ownedCards.push(card);
+  player.reservedCards.splice(index, 1);
+
+  const currentPlayerNumber = state.currentPlayerIndex + 1;
+  const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
+
+  setLog(`Player ${currentPlayerNumber} bought a reserved ${card.color} card (${card.points} VP). Player ${nextPlayerNumber}'s turn.`);
+  endTurn();
+});
 
 function canAffordCard(card){
   const player = getCurrentPlayer();
@@ -555,12 +585,13 @@ function applyCardReward(card){
   player.bonusChip[card.color] += 1;
 }
 
+// reserve card, as well as putting index for easier find
 function renderOwnedCards(){
   const player = getCurrentPlayer();
   const ownedEl = document.querySelector("#player1OwnedCards");
 
   ownedEl.innerHTML = player.ownedCards
-    .map(card =>{
+    .map((card, index) =>{
       return `
         <div class="card">
           <div class="card-top">
@@ -613,7 +644,7 @@ function renderReservedCards(){
   const reservedEl = document.querySelector("#player1ReservedCards");
 
   reservedEl.innerHTML = player.reservedCards
-    .map(card =>{
+    .map((card, index) =>{
       return `
         <div class="card">
           <div class="card-top">
@@ -623,6 +654,7 @@ function renderReservedCards(){
           <div class="card-middle">
             <div>Level ${card.level}</div>
           </div>
+          <button class="buyReservedCardButton" data-index="${index}">Buy Reserved</button>
         </div>
       `;
     })
