@@ -27,218 +27,268 @@ function getCurrentPlayer() {
 
 //basic card
 const marketCards = [
- {
-    id: 1,
-    level: 1,
-    color: "Red",
-    points: 1,
-    cost:{
-      Red: 0,
-      Green: 0,
-      Blue: 0,
-      Black: 0,
-      White: 4
-    }
-  },
 
- {
-    id: 2,
-    level: 1,
+  //black
+  {
+    id: "black_1",
+    tier: 1,
     color: "Black",
     points: 0,
-    cost:{
-      Red: 1,
-      Green: 1,
-      Blue: 1,
-      Black: 0,
-      White: 1
-    }
+    cost: { Black: 0, White: 1, Red: 1, Blue: 1, Green: 1 }
   },
-
- {
-    id: 3,
-    level: 1,
-    color: "Blue",
+  {
+    id: "black_2",
+    tier: 1,
+    color: "Black",
     points: 0,
-    cost:{
-      Red: 2,
-      Green: 2,
-      Blue: 0,
-      Black: 0,
-      White: 1
-    }
+    cost: { Black: 0, White: 0, Red: 1, Blue: 0, Green: 2 }
   },
-
- {
-    id: 4,
-    level: 1,
-    color: "Green",
+  {
+    id: "black_3",
+    tier: 1,
+    color: "Black",
     points: 0,
-    cost:{
-      Red: 1,
-      Green: 0,
-      Blue: 1,
-      Black: 1,
-      White: 1
-    }
+    cost: { Black: 0, White: 2, Red: 0, Blue: 0, Green: 2 }
   },
-
- {
-    id: 5,
-    level: 1,
-    color: "White",
+  {
+    id: "black_4",
+    tier: 1,
+    color: "Black",
     points: 0,
-    cost:{
-      Red: 0,
-      Green: 2,
-      Blue: 2,
-      Black: 0,
-      White: 0
-    }
+    cost: { Black: 1, White: 0, Red: 3, Blue: 0, Green: 1 }
+  },
+  {
+    id: "black_5",
+    tier: 1,
+    color: "Black",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 0, Green: 3 }
+  },
+  {
+    id: "black_6",
+    tier: 1,
+    color: "Black",
+    points: 0,
+    cost: { Black: 0, White: 1, Red: 1, Blue: 2, Green: 1 }
+  },
+  {
+    id: "black_7",
+    tier: 1,
+    color: "Black",
+    points: 0,
+    cost: { Black: 0, White: 2, Red: 1, Blue: 2, Green: 0 }
+  },
+  {
+    id: "black_8",
+    tier: 1,
+    color: "Black",
+    points: 1,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 4, Green: 0 }
   },
 
- {
-    id: 41,
-    level: 2,
-    color: "Red",
-    points: 2,
-    cost:{
-      Red: 0,
-      Green: 2,
-      Blue: 4,
-      Black: 0,
-      White: 1
-    }
+  {
+    id: "black_9",
+    tier: 2,
+    color: "Black",
+    points: 1,
+    cost: { Black: 0, White: 3, Red: 0, Blue: 2, Green: 2 }
   },
-
- {
-    id: 42,
-    level: 2,
+  {
+    id: "black_10",
+    tier: 2,
+    color: "Black",
+    points: 1,
+    cost: { Black: 2, White: 3, Red: 0, Blue: 0, Green: 3 }
+  },
+  {
+    id: "black_11",
+    tier: 2,
     color: "Black",
     points: 2,
-    cost:{
-      Red: 0,
-      Green: 0,
-      Blue: 0,
-      Black: 0,
-      White: 5
-    }
+    cost: { Black: 0, White: 0, Red: 2, Blue: 1, Green: 4 }
   },
-
- {
-    id: 43,
-    level: 3,
-    color: "Blue",
-    points: 3,
-    cost:{
-      Red: 0,
-      Green: 0,
-      Blue: 6,
-      Black: 0,
-      White: 0
-    }
-  },
-
- {
-    id: 44,
-    level: 2,
-    color: "Green",
+  {
+    id: "black_12",
+    tier: 2,
+    color: "Black",
     points: 2,
-    cost:{
-      Red: 0,
-      Green: 3,
-      Blue: 5,
-      Black: 0,
-      White: 0
-    }
+    cost: { Black: 0, White: 5, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "black_13",
+    tier: 2,
+    color: "Black",
+    points: 2,
+    cost: { Black: 0, White: 0, Red: 3, Blue: 0, Green: 5 }
   },
 
- {
-    id: 45,
-    level: 2,
-    color: "White",
-    points: 1,
-    cost:{
-      Red: 3,
-      Green: 0,
-      Blue: 3,
-      Black: 0,
-      White: 2
-    }
-  },
-
- {
-    id: 71,
-    level: 3,
-    color: "Red",
-    points: 4,
-    cost:{
-      Red: 0,
-      Green: 7,
-      Blue: 0,
-      Black: 0,
-      White: 0
-    }
-  },
-
- {
-    id: 72,
-    level: 3,
+  {
+    id: "black_14",
+    tier: 2,
     color: "Black",
     points: 3,
-    cost:{
-      Red: 3,
-      Green: 5,
-      Blue: 3,
-      Black: 0,
-      White: 3
-    }
+    cost: { Black: 6, White: 0, Red: 0, Blue: 0, Green: 0 }
   },
-
- {
-    id: 73,
-    level: 3,
-    color: "Blue",
+  {
+    id: "black_15",
+    tier: 3,
+    color: "Black",
+    points: 3,
+    cost: { Black: 0, White: 3, Red: 3, Blue: 3, Green: 5 }
+  },
+  {
+    id: "black_16",
+    tier: 3,
+    color: "Black",
     points: 4,
-    cost:{
-      Red: 0,
-      Green: 0,
-      Blue: 0,
-      Black: 0,
-      White: 7
-    }
+    cost: { Black: 0, White: 0, Red: 7, Blue: 0, Green: 0 }
   },
-
- {
-    id: 74,
-    level: 2,
-    color: "Green",
+  {
+    id: "black_17",
+    tier: 3,
+    color: "Black",
+    points: 4,
+    cost: { Black: 3, White: 0, Red: 6, Blue: 0, Green: 3 }
+  },
+  {
+    id: "black_18",
+    tier: 3,
+    color: "Black",
     points: 5,
-    cost:{
-      Red: 0,
-      Green: 3,
-      Blue: 7,
-      Black: 0,
-      White: 0
-    }
+    cost: { Black: 3, White: 0, Red: 7, Blue: 0, Green: 0 }
+  },
+//blue
+  {
+    id: "blue_1",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 2, White: 1, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "blue_2",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 1, White: 1, Red: 2, Blue: 0, Green: 1 }
+  },
+  {
+    id: "blue_3",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 1, White: 1, Red: 1, Blue: 0, Green: 1 }
+  },
+  {
+    id: "blue_4",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 1, Blue: 1, Green: 3 }
+  },
+  {
+    id: "blue_5",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 3, White: 0, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "blue_6",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 0, White: 1, Red: 2, Blue: 0, Green: 2 }
+  },
+  {
+    id: "blue_7",
+    tier: 1,
+    color: "Blue",
+    points: 0,
+    cost: { Black: 2, White: 0, Red: 0, Blue: 0, Green: 2 }
+  },
+  {
+    id: "blue_8",
+    tier: 1,
+    color: "Blue",
+    points: 1,
+    cost: { Black: 0, White: 0, Red: 4, Blue: 0, Green: 0 }
   },
 
- {
-    id: 75,
-    level: 2,
-    color: "White",
+  {
+    id: "blue_9",
+    tier: 2,
+    color: "Blue",
+    points: 1,
+    cost: { Black: 0, White: 0, Red: 3, Blue: 2, Green: 2 }
+  },
+  {
+    id: "blue_10",
+    tier: 2,
+    color: "Blue",
+    points: 1,
+    cost: { Black: 3, White: 0, Red: 0, Blue: 2, Green: 3 }
+  },
+  {
+    id: "blue_11",
+    tier: 2,
+    color: "Blue",
+    points: 2,
+    cost: { Black: 0, White: 5, Red: 0, Blue: 3, Green: 0 }
+  },
+  {
+    id: "blue_12",
+    tier: 2,
+    color: "Blue",
+    points: 2,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 5, Green: 0 }
+  },
+  {
+    id: "blue_13",
+    tier: 2,
+    color: "Blue",
+    points: 2,
+    cost: { Black: 4, White: 2, Red: 1, Blue: 0, Green: 0 }
+  },
+
+  {
+    id: "blue_14",
+    tier: 2,
+    color: "Blue",
+    points: 3,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 6, Green: 0 }
+  },
+  {
+    id: "blue_15",
+    tier: 3,
+    color: "Blue",
+    points: 3,
+    cost: { Black: 5, White: 3, Red: 3, Blue: 0, Green: 3 }
+  },
+  {
+    id: "blue_16",
+    tier: 3,
+    color: "Blue",
     points: 4,
-    cost:{
-      Red: 3,
-      Green: 0,
-      Blue: 0,
-      Black: 6,
-      White: 3
-    }
+    cost: { Black: 0, White: 7, Red: 0, Blue: 0, Green: 0 }
   },
-
+  {
+    id: "blue_17",
+    tier: 3,
+    color: "Blue",
+    points: 4,
+    cost: { Black: 3, White: 6, Red: 0, Blue: 3, Green: 0 }
+  },
+  {
+    id: "blue_18",
+    tier: 3,
+    color: "Blue",
+    points: 5,
+    cost: { Black: 0, White: 7, Red: 0, Blue: 3, Green: 0 }
+  }
 
 ];
+
 
 const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
