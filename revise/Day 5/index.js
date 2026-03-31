@@ -285,8 +285,394 @@ const marketCards = [
     color: "Blue",
     points: 5,
     cost: { Black: 0, White: 7, Red: 0, Blue: 3, Green: 0 }
-  }
+  },
+  //green
+  {
+    id: "green_1",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 0, White: 2, Red: 0, Blue: 1, Green: 0 }
+  },
+  {
+    id: "green_2",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 2, Blue: 2, Green: 0 }
+  },
+  {
+    id: "green_3",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 0, White: 1, Red: 0, Blue: 3, Green: 1 }
+  },
+  {
+    id: "green_4",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 1, White: 1, Red: 1, Blue: 1, Green: 0 }
+  },
+  {
+    id: "green_5",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 2, White: 1, Red: 1, Blue: 1, Green: 0 }
+  },
+  {
+    id: "green_6",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 2, White: 0, Red: 2, Blue: 1, Green: 0 }
+  },
+  {
+    id: "green_7",
+    tier: 1,
+    color: "Green",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 3, Blue: 0, Green: 0 }
+  },
+  {
+    id: "green_8",
+    tier: 1,
+    color: "Green",
+    points: 1,
+    cost: { Black: 4, White: 0, Red: 0, Blue: 0, Green: 0 }
+  },
 
+  {
+    id: "green_9",
+    tier: 2,
+    color: "Green",
+    points: 1,
+    cost: { Black: 0, White: 3, Red: 3, Blue: 0, Green: 2 }
+  },
+  {
+    id: "green_10",
+    tier: 2,
+    color: "Green",
+    points: 1,
+    cost: { Black: 2, White: 2, Red: 0, Blue: 3, Green: 0 }
+  },
+  {
+    id: "green_11",
+    tier: 2,
+    color: "Green",
+    points: 2,
+    cost: { Black: 1, White: 4, Red: 0, Blue: 2, Green: 0 }
+  },
+  {
+    id: "green_12",
+    tier: 2,
+    color: "Green",
+    points: 2,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 0, Green: 5 }
+  },
+  {
+    id: "green_13",
+    tier: 2,
+    color: "Green",
+    points: 2,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 5, Green: 3 }
+  },
+  {
+    id: "green_14",
+    tier: 2,
+    color: "Green",
+    points: 3,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 0, Green: 6 }
+  },
+
+  {
+    id: "green_15",
+    tier: 3,
+    color: "Green",
+    points: 3,
+    cost: { Black: 3, White: 5, Red: 3, Blue: 3, Green: 0 }
+  },
+  {
+    id: "green_16",
+    tier: 3,
+    color: "Green",
+    points: 4,
+    cost: { Black: 0, White: 3, Red: 0, Blue: 6, Green: 3 }
+  },
+  {
+    id: "green_17",
+    tier: 3,
+    color: "Green",
+    points: 4,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 7, Green: 0 }
+  },
+  {
+    id: "green_18",
+    tier: 3,
+    color: "Green",
+    points: 5,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 7, Green: 3 }
+  },
+  //red
+  {
+    id: "red_1",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 0, White: 3, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "red_2",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 3, White: 1, Red: 1, Blue: 0, Green: 0 }
+  },
+  {
+    id: "red_3",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 2, Green: 1 }
+  },
+  {
+    id: "red_4",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 2, White: 2, Red: 0, Blue: 0, Green: 1 }
+  },
+  {
+    id: "red_5",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 1, White: 2, Red: 0, Blue: 1, Green: 1 }
+  },
+  {
+    id: "red_6",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 1, White: 1, Red: 0, Blue: 1, Green: 1 }
+  },
+  {
+    id: "red_7",
+    tier: 1,
+    color: "Red",
+    points: 0,
+    cost: { Black: 0, White: 2, Red: 2, Blue: 0, Green: 0 }
+  },
+  {
+    id: "red_8",
+    tier: 1,
+    color: "Red",
+    points: 1,
+    cost: { Black: 0, White: 4, Red: 0, Blue: 0, Green: 0 }
+  },
+
+  {
+    id: "red_9",
+    tier: 2,
+    color: "Red",
+    points: 1,
+    cost: { Black: 3, White: 0, Red: 2, Blue: 3, Green: 0 }
+  },
+  {
+    id: "red_10",
+    tier: 2,
+    color: "Red",
+    points: 1,
+    cost: { Black: 3, White: 2, Red: 2, Blue: 0, Green: 0 }
+  },
+  {
+    id: "red_11",
+    tier: 2,
+    color: "Red",
+    points: 2,
+    cost: { Black: 0, White: 1, Red: 0, Blue: 4, Green: 2 }
+  },
+  {
+    id: "red_12",
+    tier: 2,
+    color: "Red",
+    points: 2,
+    cost: { Black: 5, White: 3, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "red_13",
+    tier: 2,
+    color: "Red",
+    points: 2,
+    cost: { Black: 5, White: 0, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "red_14",
+    tier: 2,
+    color: "Red",
+    points: 3,
+    cost: { Black: 0, White: 0, Red: 6, Blue: 0, Green: 0 }
+  },
+
+  {
+    id: "red_15",
+    tier: 3,
+    color: "Red",
+    points: 3,
+    cost: { Black: 3, White: 3, Red: 0, Blue: 5, Green: 3 }
+  },
+  {
+    id: "red_16",
+    tier: 3,
+    color: "Red",
+    points: 4,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 0, Green: 7 }
+  },
+  {
+    id: "red_17",
+    tier: 3,
+    color: "Red",
+    points: 4,
+    cost: { Black: 0, White: 0, Red: 3, Blue: 3, Green: 6 }
+  },
+  {
+    id: "red_18",
+    tier: 3,
+    color: "Red",
+    points: 5,
+    cost: { Black: 0, White: 0, Red: 3, Blue: 0, Green: 7 }
+  },
+  //white
+  {
+    id: "white_1",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 1, White: 0, Red: 0, Blue: 2, Green: 2 }
+  },
+  {
+    id: "white_2",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 1, White: 0, Red: 2, Blue: 0, Green: 0 }
+  },
+  {
+    id: "white_3",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 1, White: 0, Red: 1, Blue: 1, Green: 1 }
+  },
+  {
+    id: "white_4",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 3, Green: 0 }
+  },
+  {
+    id: "white_5",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 2, Green: 2 }
+  },
+  {
+    id: "white_6",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 1, White: 0, Red: 1, Blue: 1, Green: 2 }
+  },
+  {
+    id: "white_7",
+    tier: 1,
+    color: "White",
+    points: 0,
+    cost: { Black: 1, White: 3, Red: 0, Blue: 1, Green: 0 }
+  },
+  {
+    id: "white_8",
+    tier: 1,
+    color: "White",
+    points: 1,
+    cost: { Black: 0, White: 0, Red: 0, Blue: 0, Green: 4 }
+  },
+
+  {
+    id: "white_9",
+    tier: 2,
+    color: "White",
+    points: 1,
+    cost: { Black: 2, White: 0, Red: 2, Blue: 0, Green: 3 }
+  },
+  {
+    id: "white_10",
+    tier: 2,
+    color: "White",
+    points: 1,
+    cost: { Black: 0, White: 2, Red: 3, Blue: 3, Green: 0 }
+  },
+  {
+    id: "white_11",
+    tier: 2,
+    color: "White",
+    points: 2,
+    cost: { Black: 2, White: 0, Red: 4, Blue: 0, Green: 1 }
+  },
+  {
+    id: "white_12",
+    tier: 2,
+    color: "White",
+    points: 2,
+    cost: { Black: 0, White: 0, Red: 5, Blue: 0, Green: 0 }
+  },
+  {
+    id: "white_13",
+    tier: 2,
+    color: "White",
+    points: 2,
+    cost: { Black: 3, White: 0, Red: 5, Blue: 0, Green: 0 }
+  },
+  {
+    id: "white_14",
+    tier: 2,
+    color: "White",
+    points: 3,
+    cost: { Black: 0, White: 6, Red: 0, Blue: 0, Green: 0 }
+  },
+
+  {
+    id: "white_15",
+    tier: 3,
+    color: "White",
+    points: 3,
+    cost: { Black: 3, White: 0, Red: 5, Blue: 3, Green: 3 }
+  },
+  {
+    id: "white_16",
+    tier: 3,
+    color: "White",
+    points: 4,
+    cost: { Black: 7, White: 0, Red: 0, Blue: 0, Green: 0 }
+  },
+  {
+    id: "white_17",
+    tier: 3,
+    color: "White",
+    points: 4,
+    cost: { Black: 6, White: 3, Red: 3, Blue: 0, Green: 0 }
+  },
+  {
+    id: "white_18",
+    tier: 3,
+    color: "White",
+    points: 5,
+    cost: { Black: 7, White: 3, Red: 0, Blue: 0, Green: 0 }
+  }
 ];
 
 
@@ -375,7 +761,7 @@ function render(){
   } else{
     const card = marketCards[state.selectedReserveIndex];
     selectedReserveTextEl.textContent = card
-      ? `${card.color} | Level ${card.level} | ${card.points} VP`
+      ? `${card.color} | Level ${card.tier} | ${card.points} VP`
       : "none";
   }
 
@@ -499,7 +885,7 @@ if (action === "remove"){
 }
 });
 
-function createCardHTML(card, index){
+function createCardHTML(card, index, tier){
   const costHTML = Object.entries(card.cost)
     .filter(([color, amount]) => amount > 0)
     .map(([color, amount]) =>{
@@ -508,42 +894,45 @@ function createCardHTML(card, index){
     .join("");
 
   return `
-    <div class="card" data-index="${index}">
+    <div class="card" data-id="${card.id}" data-tier="${tier}">
       <div class="card-top">
         <span class="card-points">${card.points}</span>
         <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
       </div>
       <div class="card-middle">
-        <div>Level ${card.level}</div>
+        <div>Level ${card.tier}</div>
       </div>
       <div class="card-costs">
         ${costHTML}
       </div>
-      <button class="buyCardButton" data-index="${index}">Buy</button>
+      <button class="buyCardButton" data-id="${card.id}" data-tier="${tier}">Buy</button>
     </div>
   `;
 }
 
-const marketCardsEl = document.querySelector("#marketCards");
+const marketAreaEl = document.querySelector("#marketArea");
+const marketTier3El = document.querySelector("#marketTier3");
+const marketTier2El = document.querySelector("#marketTier2");
+const marketTier1El = document.querySelector("#marketTier1");
 const reservedCardsEl = document.querySelector("#player1ReservedCards");
 
 //important
-marketCardsEl.addEventListener("click", (e) =>{
+marketAreaEl.addEventListener("click", (e) =>{
   const cardEl = e.target.closest(".card");
   if (!cardEl) return;
 
   if (state.currentAction === "reserve"){
-    const index = Number(cardEl.dataset.index);
-    state.selectedReserveIndex = index;
-    render();
-    return;
-  }
+  const cardId = cardEl.dataset.id;
+  state.selectedReserveIndex = cardId;
+  render();
+  return;
+}
 
   const btn = e.target.closest(".buyCardButton");
   if (!btn) return;
 
-  const index = Number(btn.dataset.index);
-  const card = marketCards[index];
+  const cardId = btn.dataset.id;
+  const card = marketCards.find(card => card.id === cardId);
 
   if (!canAffordCard(card)){
   setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this card.`);
@@ -552,7 +941,9 @@ marketCardsEl.addEventListener("click", (e) =>{
 
   payForCard(card);
   applyCardReward(card);
-  marketCards.splice(index, 1);
+  const cardIndex = marketCards.findIndex(card => card.id === cardId);
+    if (cardIndex === -1) return;
+    marketCards.splice(cardIndex, 1);
   const player = getCurrentPlayer();
   player.ownedCards.push(card);
 
@@ -649,7 +1040,7 @@ function renderOwnedCards(){
             <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
           </div>
           <div class="card-middle">
-            <div>Level ${card.level}</div>
+            <div>Level ${card.tier}</div>
           </div>
         </div>
       `;
@@ -673,18 +1064,22 @@ function confirmReserveCard(){
 
   // fix save card logic
 
-  const card = marketCards[state.selectedReserveIndex];
+  const card = marketCards.find(card => card.id === state.selectedReserveIndex);
   if (!card) return;
 
   player.reservedCards.push(card);
-  marketCards.splice(state.selectedReserveIndex, 1);
+
+  const cardIndex = marketCards.findIndex(card => card.id === state.selectedReserveIndex);
+  
+  if (cardIndex === -1) return;
+  marketCards.splice(cardIndex, 1);
 
   if (state.bank.Wild > 0 && totalChip(player.chips) < 10){
   player.chips.Wild += 1;
   state.bank.Wild -= 1;
 }
 
-  setLog(`Player ${state.currentPlayerIndex + 1} reserved a ${card.color} level ${card.level} card.`);
+  setLog(`Player ${state.currentPlayerIndex + 1} reserved a ${card.color} level ${card.tier} card.`);
 
   endTurn();
 }
@@ -702,7 +1097,7 @@ function renderReservedCards(){
             <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
           </div>
           <div class="card-middle">
-            <div>Level ${card.level}</div>
+            <div>Level ${card.tier}</div>
           </div>
           <button class="buyReservedCardButton" data-index="${index}">Buy Reserved</button>
         </div>
@@ -712,9 +1107,20 @@ function renderReservedCards(){
 }
 
 function renderMarket(){
-  const marketEl = document.querySelector("#marketCards");
-  marketEl.innerHTML = marketCards
-    .map((card, index) => createCardHTML(card, index))
+  const tier3Cards = marketCards.filter(card => card.tier === 3).slice(0, 4);
+  const tier2Cards = marketCards.filter(card => card.tier === 2).slice(0, 4);
+  const tier1Cards = marketCards.filter(card => card.tier === 1).slice(0, 4);
+
+  marketTier3El.innerHTML = tier3Cards
+    .map((card, index) => createCardHTML(card, index, 3))
+    .join("");
+
+  marketTier2El.innerHTML = tier2Cards
+    .map((card, index) => createCardHTML(card, index, 2))
+    .join("");
+
+  marketTier1El.innerHTML = tier1Cards
+    .map((card, index) => createCardHTML(card, index, 1))
     .join("");
 }
 
