@@ -759,7 +759,7 @@ function render(){
   if (state.selectedReserveIndex === null){
     selectedReserveTextEl.textContent = "none";
   } else{
-    const card = marketCards[state.selectedReserveIndex];
+    const card = marketCards.find(card => card.id === state.selectedReserveIndex);
     selectedReserveTextEl.textContent = card
       ? `${card.color} | Level ${card.tier} | ${card.points} VP`
       : "none";
