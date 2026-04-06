@@ -9,7 +9,8 @@ function createPlayer() {
     victoryPoints: 0,
     bonusChip: Object.fromEntries(BONUS_COLORS.map(c => [c, 0])),
     ownedCards: [],
-    reservedCards: []
+    reservedCards: [],
+    nobles: []
   };
 }
 
@@ -675,6 +676,119 @@ const marketCards = [
   }
 ];
 
+//nobles
+const nobles = [
+  {
+    id: "noble_1",
+    points: 3,
+    requiredBonuses: {
+      White: 3,
+      Blue: 3,
+      Black: 0,
+      Red: 0,
+      Green: 3
+    }
+  },
+  {
+    id: "noble_2",
+    points: 3,
+    requiredBonuses: {
+      White: 0,
+      Blue: 3,
+      Black: 0,
+      Red: 3,
+      Green: 3
+    }
+  },
+  {
+    id: "noble_3",
+    points: 3,
+    requiredBonuses: {
+      White: 3,
+      Blue: 0,
+      Black: 3,
+      Red: 3,
+      Green: 0
+    }
+  },
+  {
+    id: "noble_4",
+    points: 3,
+    requiredBonuses: {
+      White: 3,
+      Blue: 3,
+      Black: 3,
+      Red: 0,
+      Green: 0
+    }
+  },
+  {
+    id: "noble_5",
+    points: 3,
+    requiredBonuses: {
+      White: 0,
+      Blue: 0,
+      Black: 3,
+      Red: 3,
+      Green: 3
+    }
+  },
+  {
+    id: "noble_6",
+    points: 3,
+    requiredBonuses: {
+      White: 0,
+      Blue: 0,
+      Black: 4,
+      Red: 4,
+      Green: 0
+    }
+  },
+  {
+    id: "noble_7",
+    points: 3,
+    requiredBonuses: {
+      White: 4,
+      Blue: 0,
+      Black: 4,
+      Red: 0,
+      Green: 0
+    }
+  },
+  {
+    id: "noble_8",
+    points: 3,
+    requiredBonuses: {
+      White: 0,
+      Blue: 0,
+      Black: 0,
+      Red: 4,
+      Green: 4
+    }
+  },
+  {
+    id: "noble_9",
+    points: 3,
+    requiredBonuses: {
+      White: 4,
+      Blue: 4,
+      Black: 0,
+      Red: 0,
+      Green: 0
+    }
+  },
+  {
+    id: "noble_10",
+    points: 3,
+    requiredBonuses: {
+      White: 0,
+      Blue: 4,
+      Black: 0,
+      Red: 0,
+      Green: 4
+    }
+  }
+];
 
 const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
@@ -786,6 +900,7 @@ function render(){
   renderMarket();
   renderOwnedCards();
   renderReservedCards();
+  renderNobles();
 }
 
 function isValidTakeSelection(){
@@ -910,6 +1025,37 @@ function createCardHTML(card, index, tier){
   `;
 }
 
+function renderNobles(){
+  const noblesEl = document.querySelector("#noblesArea");
+  noblesEl.innerHTML = nobles
+    .map(noble => createNobleHTML(noble))
+    .join("");
+}
+
+function createNobleHTML(noble){
+  const requirementHTML = Object.entries(noble.requiredBonuses)
+    .filter(([color, amount]) => amount > 0)
+    .map(([color, amount]) => {
+      return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
+    })
+    .join("");
+
+  return `
+    <div class="card noble">
+      <div class="card-top">
+        <span class="card-points">${noble.points}</span>
+        <span class="card-bonus">Noble</span>
+      </div>
+      <div class="card-middle">
+        <div>${noble.id}</div>
+      </div>
+      <div class="card-costs">
+        ${requirementHTML}
+      </div>
+    </div>
+  `;
+}
+
 const marketAreaEl = document.querySelector("#marketArea");
 const marketTier3El = document.querySelector("#marketTier3");
 const marketTier2El = document.querySelector("#marketTier2");
@@ -939,17 +1085,30 @@ marketAreaEl.addEventListener("click", (e) =>{
   return;
 }
 
+  const player = getCurrentPlayer();
+  const currentPlayerNumber = state.currentPlayerIndex + 1;
+  const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
+
   payForCard(card);
   applyCardReward(card);
+
   const cardIndex = marketCards.findIndex(card => card.id === cardId);
-    if (cardIndex === -1) return;
-    marketCards.splice(cardIndex, 1);
-  const player = getCurrentPlayer();
+  if (cardIndex === -1) return;
+  marketCards.splice(cardIndex, 1);
+
   player.ownedCards.push(card);
 
-  setLog(`Player ${state.currentPlayerIndex + 1} bought a ${card.color} card (${card.points} VP).`);
+  const claimedNoble = claimAvailableNoble(player);
+
+  if (claimedNoble){
+    setLog(`Player ${currentPlayerNumber} bought a ${card.color} card (${card.points} VP), claimed ${claimedNoble.id}, and it is now Player ${nextPlayerNumber}'s turn.`);
+  } 
+  else {
+    setLog(`Player ${currentPlayerNumber} bought a ${card.color} card (${card.points} VP). Player ${nextPlayerNumber}'s turn.`);
+  }
+
   endTurn();
-  });
+});
 
   reservedCardsEl.addEventListener("click", (e) =>{
   const btn = e.target.closest(".buyReservedCardButton");
@@ -973,10 +1132,17 @@ marketAreaEl.addEventListener("click", (e) =>{
   player.ownedCards.push(card);
   player.reservedCards.splice(index, 1);
 
+  const claimedNoble = claimAvailableNoble(player);
+
   const currentPlayerNumber = state.currentPlayerIndex + 1;
   const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
 
-  setLog(`Player ${currentPlayerNumber} bought a reserved ${card.color} card (${card.points} VP). Player ${nextPlayerNumber}'s turn.`);
+  if (claimedNoble){
+    setLog(`Player ${currentPlayerNumber} bought a reserved ${card.color} card (${card.points} VP), claimed ${claimedNoble.id}, and it is now Player ${nextPlayerNumber}'s turn.`);
+  } else {
+    setLog(`Player ${currentPlayerNumber} bought a reserved ${card.color} card (${card.points} VP). Player ${nextPlayerNumber}'s turn.`);
+  }
+
   endTurn();
 });
 
@@ -1024,6 +1190,24 @@ function applyCardReward(card){
   const player = getCurrentPlayer();
   player.victoryPoints += card.points;
   player.bonusChip[card.color] += 1;
+}
+
+function canClaimNoble(player, noble){
+  return BONUS_COLORS.every(color =>
+    (player.bonusChip[color] || 0) >= (noble.requiredBonuses[color] || 0)
+  );
+}
+
+function claimAvailableNoble(player){
+  const nobleIndex = nobles.findIndex(noble => canClaimNoble(player, noble));
+  if (nobleIndex === -1) return null;
+
+  const noble = nobles[nobleIndex];
+  nobles.splice(nobleIndex, 1);
+  player.nobles.push(noble);
+  player.victoryPoints += noble.points;
+
+  return noble;
 }
 
 // reserve card, as well as putting index for easier find
