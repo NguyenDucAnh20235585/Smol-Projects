@@ -12,8 +12,8 @@
   <div id="gameLog">Game started. Player 1's turn.</div>
 
   <section id="noblesPanel" class="panel">
-  <h2>Nobles</h2>
-  <div id="noblesArea"></div>
+    <h2>Nobles</h2>
+    <div id="noblesArea" class="nobles-row"></div>
   </section>
 
   <section id="market">
@@ -89,6 +89,7 @@
     <button id="reserveModeButton">Reserve Card</button>
     <button id="confirmReserve">Confirm Reserve</button>
     <button id="cancelAction">Cancel</button>
+    <button id="debugEndGame">Debug End Game</button>
     <div>Selected reserve card: <span id="selectedReserveText">none</span></div>
   </div>
 
@@ -97,6 +98,10 @@
       <div id="player1ReservedCards"></div>
     </section>
 
+    <div class="collected-nobles-panel">
+      <h3>Collected Nobles</h3>
+      <div id="player1CollectedNobles"></div>
+    </div>
 
   <section id = "banker" class="panel">
     <div class="row">

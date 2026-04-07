@@ -65,3 +65,22 @@
   overflow-x: auto;
   padding-bottom: 4px;
 }
+
+#noblesPanel {
+  margin-bottom: 16px;
+}
+
+.nobles-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;
+  overflow-x: auto;
+  align-items: stretch;
+}
+
+#noblesArea .card {
+  width: 180px;
+  min-width: 180px;
+  min-height: 170px;
+  box-sizing: border-box;
+}

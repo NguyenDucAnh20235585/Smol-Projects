@@ -814,11 +814,36 @@ const player1BlueBonusEl = document.querySelector("#player1BlueBonus");
 const player1BlackBonusEl = document.querySelector("#player1BlackBonus");
 const player1WhiteBonusEl = document.querySelector("#player1WhiteBonus");
 
+//debug purpose
+const debugEndGameButton = document.querySelector("#debugEndGame");
+
 //log
 const gameLogEl = document.querySelector("#gameLog");
 
 function setLog(message){
   gameLogEl.textContent = message;
+}
+
+function debugSetNearEndGame(){
+  const player = getCurrentPlayer();
+
+  player.victoryPoints = 14;
+
+  player.bonusChip.Red = 3;
+  player.bonusChip.Green = 3;
+  player.bonusChip.Blue = 3;
+  player.bonusChip.Black = 0;
+  player.bonusChip.White = 0;
+
+  player.chips.Red = 3;
+  player.chips.Green = 3;
+  player.chips.Blue = 3;
+  player.chips.Black = 3;
+  player.chips.White = 3;
+  player.chips.Wild = 2;
+
+  setLog(`Debug: Player ${state.currentPlayerIndex + 1} is now near end game.`);
+  render();
 }
 
 function totalChip(obj){
@@ -901,6 +926,7 @@ function render(){
   renderOwnedCards();
   renderReservedCards();
   renderNobles();
+  renderCollectedNobles();
 }
 
 function isValidTakeSelection(){
@@ -1027,9 +1053,36 @@ function createCardHTML(card, index, tier){
 
 function renderNobles(){
   const noblesEl = document.querySelector("#noblesArea");
-  noblesEl.innerHTML = nobles
-    .map(noble => createNobleHTML(noble))
-    .join("");
+  noblesEl.innerHTML = nobles.slice(0, 5).map(createNobleHTML).join("");
+}
+
+function renderCollectedNobles(){
+  const player = getCurrentPlayer();
+  const collectedNoblesEl = document.querySelector("#player1CollectedNobles");
+
+  if (!collectedNoblesEl) return;
+
+  if (player.nobles.length === 0){
+    collectedNoblesEl.innerHTML = `<div class="emptyText">No nobles yet</div>`;
+    return;
+  }
+
+  collectedNoblesEl.innerHTML = player.nobles
+  .map(noble => {
+    const reqText = Object.entries(noble.requiredBonuses)
+      .filter(([_, amount]) => amount > 0)
+      .map(([color, amount]) => `${color}: ${amount}`)
+      .join(" | ");
+
+    return `
+      <div class="mini-noble">
+        <div class="mini-noble-title">${noble.id}</div>
+        <div class="mini-noble-points">${noble.points} VP</div>
+        <div class="mini-noble-req">${reqText}</div>
+      </div>
+    `;
+  })
+  .join("");
 }
 
 function createNobleHTML(noble){
@@ -1041,15 +1094,15 @@ function createNobleHTML(noble){
     .join("");
 
   return `
-    <div class="card noble">
+    <div class="card noble-card">
       <div class="card-top">
         <span class="card-points">${noble.points}</span>
-        <span class="card-bonus">Noble</span>
+        <span class="noble-badge">Noble</span>
       </div>
       <div class="card-middle">
-        <div>${noble.id}</div>
+        <div class="noble-title">${noble.id}</div>
       </div>
-      <div class="card-costs">
+      <div class="card-costs noble-costs">
         ${requirementHTML}
       </div>
     </div>
@@ -1321,6 +1374,9 @@ clearButton.addEventListener("click", clearSelection);
 reserveModeButton.addEventListener("click", enterReserveMode);
 confirmReserveButton.addEventListener("click", confirmReserveCard);
 cancelActionButton.addEventListener("click", cancelAction);
+
+debugEndGameButton.addEventListener("click", debugSetNearEndGame);
+
 setLog("Game started. Player 1's turn.");
 
 render();
