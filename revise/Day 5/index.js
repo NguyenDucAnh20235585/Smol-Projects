@@ -19,7 +19,10 @@ const state = {
   currentPlayerIndex: 0,
   bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 },
   currentAction: "take",
-  selectedReserveIndex: null
+  selectedReserveIndex: null,
+  gameEnding: false,
+  endGameTriggeredBy: null,
+  gameOver: false
 };
 
 function getCurrentPlayer() {
@@ -825,6 +828,7 @@ function setLog(message){
 }
 
 function debugSetNearEndGame(){
+  if (state.gameOver) return;
   const player = getCurrentPlayer();
 
   player.victoryPoints = 14;
@@ -927,6 +931,14 @@ function render(){
   renderReservedCards();
   renderNobles();
   renderCollectedNobles();
+
+  if (state.gameOver){
+  confirmButton.disabled = true;
+  clearButton.disabled = true;
+  confirmReserveButton.disabled = true;
+  reserveModeButton.disabled = true;
+  cancelActionButton.disabled = true;
+  }
 }
 
 function isValidTakeSelection(){
@@ -947,11 +959,44 @@ function isValidTakeSelection(){
   return threeChipDistinct || twoSame;
 }
 
+function finishGame(){
+  state.gameOver = true;
+
+  const player1 = state.players[0];
+  const player2 = state.players[1];
+
+  if (player1.victoryPoints > player2.victoryPoints){
+    setLog(`Game over. Player 1 wins with ${player1.victoryPoints} points against ${player2.victoryPoints}.`);
+  } else if (player2.victoryPoints > player1.victoryPoints){
+    setLog(`Game over. Player 2 wins with ${player2.victoryPoints} points against ${player1.victoryPoints}.`);
+  } else {
+    setLog(`Game over. Draw ${player1.victoryPoints} - ${player2.victoryPoints}.`);
+  }
+
+  render();
+}
+
 function endTurn(){
+  const playerJustFinishedIndex = state.currentPlayerIndex;
+  const playerJustFinished = state.players[playerJustFinishedIndex];
+
+  if (!state.gameEnding && playerJustFinished.victoryPoints >= 15){
+    state.gameEnding = true;
+    state.endGameTriggeredBy = playerJustFinishedIndex;
+  }
+
   clearSelectionOnly();
   state.selectedReserveIndex = null;
   state.currentAction = "take";
-  state.currentPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+
+  const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+
+  if (state.gameEnding && nextPlayerIndex === state.endGameTriggeredBy){
+    finishGame();
+    return;
+  }
+
+  state.currentPlayerIndex = nextPlayerIndex;
   render();
 }
 
@@ -960,6 +1005,9 @@ function clearSelectionOnly(){
 }
 
 function confirmTake(){
+
+  if (state.gameOver) return;
+
   const player = getCurrentPlayer();
   const playerTotalChip = totalChip(player.chips);
   const selectedTotalChip = totalChip(selected);
@@ -996,6 +1044,7 @@ function clearSelection(){
 }
 
 playerSection.addEventListener("click", (e) =>{
+  if (state.gameOver) return;
   const btn = e.target.closest(".chipButton");
   if (!btn) return;
 
@@ -1117,6 +1166,7 @@ const reservedCardsEl = document.querySelector("#player1ReservedCards");
 
 //important
 marketAreaEl.addEventListener("click", (e) =>{
+  if (state.gameOver) return;
   const cardEl = e.target.closest(".card");
   if (!cardEl) return;
 
@@ -1164,6 +1214,7 @@ marketAreaEl.addEventListener("click", (e) =>{
 });
 
   reservedCardsEl.addEventListener("click", (e) =>{
+  if (state.gameOver) return;
   const btn = e.target.closest(".buyReservedCardButton");
   if (!btn) return;
 
@@ -1286,6 +1337,7 @@ function renderOwnedCards(){
 }
 
 function enterReserveMode(){
+  if (state.gameOver) return;
   state.currentAction = "reserve";
   state.selectedReserveIndex = null;
   setLog(`Player ${state.currentPlayerIndex + 1} is choosing a card to reserve.`);
@@ -1293,6 +1345,7 @@ function enterReserveMode(){
 }
 
 function confirmReserveCard(){
+  if (state.gameOver) return;
   const player = getCurrentPlayer();
 
   if (state.currentAction !== "reserve") return;
@@ -1362,6 +1415,7 @@ function renderMarket(){
 }
 
 function cancelAction(){
+  if (state.gameOver) return;
   state.currentAction = "take";
   state.selectedReserveIndex = null;
   clearSelectionOnly();
