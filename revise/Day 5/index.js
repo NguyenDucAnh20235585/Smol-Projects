@@ -17,6 +17,8 @@ function createPlayer() {
 const state = {
   players: [createPlayer(), createPlayer()],
   currentPlayerIndex: 0,
+  humanPlayerIndex: 0,
+  botPlayerIndex: 1,
   bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 },
   currentAction: "take",
   selectedReserveIndex: null,
@@ -24,6 +26,10 @@ const state = {
   endGameTriggeredBy: null,
   gameOver: false
 };
+
+function isBotTurn(){
+  return state.currentPlayerIndex === state.botPlayerIndex;
+}
 
 function getCurrentPlayer() {
   return state.players[state.currentPlayerIndex];
@@ -938,7 +944,17 @@ function render(){
   confirmReserveButton.disabled = true;
   reserveModeButton.disabled = true;
   cancelActionButton.disabled = true;
+  debugEndGameButton.disabled = true;
   }
+
+  if (isBotTurn()){
+  confirmButton.disabled = true;
+  clearButton.disabled = true;
+  confirmReserveButton.disabled = true;
+  reserveModeButton.disabled = true;
+  cancelActionButton.disabled = true;
+  }
+
 }
 
 function isValidTakeSelection(){
@@ -997,16 +1013,37 @@ function endTurn(){
   }
 
   state.currentPlayerIndex = nextPlayerIndex;
-  render();
+render();
+
+if (isBotTurn() && !state.gameOver){
+  setTimeout(() => {
+    runBotTurn();
+  }, 1000);
+}
 }
 
 function clearSelectionOnly(){
   for (const c of TAKE_COLORS) selected[c] = 0;
 }
 
+function applyTakeSelection(){
+  const player = getCurrentPlayer();
+
+  for (const c of TAKE_COLORS){
+    const k = selected[c];
+    if (k <= 0) continue;
+    if (state.bank[c] < k) continue;
+
+    state.bank[c] -= k;
+    player.chips[c] += k;
+    selected[c] = 0;
+  }
+}
+
 function confirmTake(){
 
   if (state.gameOver) return;
+  if (isBotTurn()) return;
 
   const player = getCurrentPlayer();
   const playerTotalChip = totalChip(player.chips);
@@ -1024,15 +1061,7 @@ function confirmTake(){
     return;
   }
 
-  for (const c of TAKE_COLORS){
-    const k = selected[c];
-    if (k <= 0) continue;
-    if (state.bank[c] < k) continue;
-
-    state.bank[c] -= k;
-    player.chips[c] += k;
-    selected[c] = 0;
-  }
+  applyTakeSelection();
 
   setLog(`Player ${currentPlayerNumber} took ${takenParts.join(", ")}. Player ${nextPlayerNumber}'s turn.`);
   endTurn();
@@ -1045,6 +1074,8 @@ function clearSelection(){
 
 playerSection.addEventListener("click", (e) =>{
   if (state.gameOver) return;
+  if (isBotTurn()) return;
+
   const btn = e.target.closest(".chipButton");
   if (!btn) return;
 
@@ -1167,6 +1198,8 @@ const reservedCardsEl = document.querySelector("#player1ReservedCards");
 //important
 marketAreaEl.addEventListener("click", (e) =>{
   if (state.gameOver) return;
+  if (isBotTurn()) return;
+
   const cardEl = e.target.closest(".card");
   if (!cardEl) return;
 
@@ -1215,6 +1248,8 @@ marketAreaEl.addEventListener("click", (e) =>{
 
   reservedCardsEl.addEventListener("click", (e) =>{
   if (state.gameOver) return;
+  if (isBotTurn()) return;
+
   const btn = e.target.closest(".buyReservedCardButton");
   if (!btn) return;
 
@@ -1268,6 +1303,12 @@ function canAffordCard(card){
   return wildNeeded <= player.chips.Wild;
 }
 
+function getAffordableMarketCards(){
+  return marketCards.filter(card => {
+    return canAffordCard(card);
+  });
+}
+
 function payForCard(card){
   const player = getCurrentPlayer();
 
@@ -1288,6 +1329,140 @@ function payForCard(card){
       state.bank.Wild += stillMissing;
     }
   }
+}
+
+// botv1
+function getCardTotalCost(card){
+  return BONUS_COLORS.reduce((sum, color) => {
+    return sum + (card.cost[color] || 0);
+  }, 0);
+}
+
+function chooseBestAffordableCard(cards){
+  if (cards.length === 0) return null;
+
+  const sortedCards = [...cards].sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    return getCardTotalCost(a) - getCardTotalCost(b);
+  });
+
+  return sortedCards[0];
+}
+
+function chooseTargetCardForBot(){
+  const unavailableCards = marketCards.filter(card => !canAffordCard(card));
+
+  if (unavailableCards.length === 0) return null;
+
+  const sortedCards = [...unavailableCards].sort((a, b) => {
+    if (a.points !== b.points) return b.points - a.points;
+    return getCardTotalCost(a) - getCardTotalCost(b);
+  });
+
+  return sortedCards[0];
+}
+
+function getNeededColorsForCard(player, card){
+  const neededColors = [];
+
+  for (const color of BONUS_COLORS){
+    const cost = card.cost[color] || 0;
+    const bonus = player.bonusChip[color] || 0;
+    const chips = player.chips[color] || 0;
+    const discountedCost = Math.max(0, cost - bonus);
+    const missing = Math.max(0, discountedCost - chips);
+
+    if (missing > 0 && state.bank[color] > 0){
+      neededColors.push(color);
+    }
+  }
+
+  return neededColors;
+}
+
+function botTakeChips(){
+  const player = getCurrentPlayer();
+  const targetCard = chooseTargetCardForBot();
+
+  let colorsToTake = [];
+
+  if (targetCard){
+    colorsToTake = getNeededColorsForCard(player, targetCard).slice(0, 3);
+  }
+
+  if (colorsToTake.length === 0){
+    colorsToTake = TAKE_COLORS.filter(color => state.bank[color] > 0).slice(0, 3);
+  }
+
+  for (const color of TAKE_COLORS){
+    selected[color] = 0;
+  }
+
+  for (const color of colorsToTake){
+    selected[color] = 1;
+  }
+
+  if (!isValidTakeSelection() || totalChip(player.chips) + totalChip(selected) > 10){
+    for (const color of TAKE_COLORS){
+      selected[color] = 0;
+    }
+
+    const fallbackColors = TAKE_COLORS.filter(color => state.bank[color] > 0).slice(0, 3);
+    for (const color of fallbackColors){
+      selected[color] = 1;
+    }
+  }
+
+  const takenParts = TAKE_COLORS
+  .filter(c => selected[c] > 0)
+  .map(c => `${c} x${selected[c]}`);
+
+  if (takenParts.length === 0) return;
+
+  applyTakeSelection();
+  setLog(`Bot took ${takenParts.join(", ")}.`);
+  endTurn();
+}
+
+function botBuyCard(){
+  const affordableCards = getAffordableMarketCards();
+  const chosenCard = chooseBestAffordableCard(affordableCards);
+
+  if (!chosenCard) return false;
+
+  const player = getCurrentPlayer();
+
+  payForCard(chosenCard);
+  applyCardReward(chosenCard);
+
+  const cardIndex = marketCards.findIndex(card => card.id === chosenCard.id);
+  if (cardIndex !== -1){
+    marketCards.splice(cardIndex, 1);
+  }
+
+  player.ownedCards.push(chosenCard);
+
+  const claimedNoble = claimAvailableNoble(player);
+
+  if (claimedNoble){
+    setLog(`Bot bought ${chosenCard.color} (${chosenCard.points} VP) and claimed ${claimedNoble.id}.`);
+  } else {
+    setLog(`Bot bought ${chosenCard.color} (${chosenCard.points} VP).`);
+  }
+
+  endTurn();
+  return true;
+}
+
+//run bot
+function runBotTurn(){
+  if (state.gameOver) return;
+  if (!isBotTurn()) return;
+
+  const bought = botBuyCard();
+  if (bought) return;
+
+  botTakeChips();
 }
 
 function applyCardReward(card){
@@ -1338,6 +1513,8 @@ function renderOwnedCards(){
 
 function enterReserveMode(){
   if (state.gameOver) return;
+  if (isBotTurn()) return;
+
   state.currentAction = "reserve";
   state.selectedReserveIndex = null;
   setLog(`Player ${state.currentPlayerIndex + 1} is choosing a card to reserve.`);
@@ -1346,6 +1523,8 @@ function enterReserveMode(){
 
 function confirmReserveCard(){
   if (state.gameOver) return;
+  if (isBotTurn()) return;
+
   const player = getCurrentPlayer();
 
   if (state.currentAction !== "reserve") return;
@@ -1416,6 +1595,8 @@ function renderMarket(){
 
 function cancelAction(){
   if (state.gameOver) return;
+  if (isBotTurn()) return;
+
   state.currentAction = "take";
   state.selectedReserveIndex = null;
   clearSelectionOnly();
