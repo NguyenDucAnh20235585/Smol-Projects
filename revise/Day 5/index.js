@@ -19,6 +19,7 @@ const state = {
   currentPlayerIndex: 0,
   humanPlayerIndex: 0,
   botPlayerIndex: 1,
+  gameMode: "bot",
   bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 },
   currentAction: "take",
   selectedReserveIndex: null,
@@ -27,8 +28,17 @@ const state = {
   gameOver: false
 };
 
+//support for bot
 function isBotTurn(){
-  return state.currentPlayerIndex === state.botPlayerIndex;
+  return isBotMode() && state.currentPlayerIndex === state.botPlayerIndex;
+}
+
+function isBotMode(){
+  return state.gameMode === "bot";
+}
+
+function isMultiplayerMode(){
+  return state.gameMode === "multiplayer";
 }
 
 function getCurrentPlayer() {
@@ -36,7 +46,7 @@ function getCurrentPlayer() {
 }
 
 //basic card
-const marketCards = [
+const ALL_MARKET_CARDS = [
 
   //black
   {
@@ -686,7 +696,7 @@ const marketCards = [
 ];
 
 //nobles
-const nobles = [
+const ALL_NOBLES = [
   {
     id: "noble_1",
     points: 3,
@@ -799,6 +809,33 @@ const nobles = [
   }
 ];
 
+let marketCards = [];
+
+let nobles = [];
+
+function shuffleArray(array){
+  const copy = [...array];
+
+  for (let i = copy.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+
+  return copy;
+}
+
+function buildShuffledMarketDeck(){
+  const tier1 = shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 1));
+  const tier2 = shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 2));
+  const tier3 = shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 3));
+
+  return [...tier3, ...tier2, ...tier1];
+}
+
+function buildShuffledNobles(){
+  return shuffleArray(ALL_NOBLES);
+}
+
 const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
 const playerSection = document.querySelector("#player1");
@@ -825,6 +862,11 @@ const player1WhiteBonusEl = document.querySelector("#player1WhiteBonus");
 
 //debug purpose
 const debugEndGameButton = document.querySelector("#debugEndGame");
+
+//for bot purposes
+const modeBotButton = document.querySelector("#modeBot");
+const modeMultiplayerButton = document.querySelector("#modeMultiplayer");
+const currentModeLabelEl = document.querySelector("#currentModeLabel");
 
 //log
 const gameLogEl = document.querySelector("#gameLog");
@@ -931,6 +973,7 @@ function render(){
   player1WhiteBonusEl.textContent = player.bonusChip.White;
   
   currentPlayerLabelEl.textContent = `Player ${state.currentPlayerIndex + 1}`;
+  currentModeLabelEl.textContent = isBotMode() ? "Vs Bot" : "Multiplayer";
 
   renderMarket();
   renderOwnedCards();
@@ -1105,6 +1148,37 @@ if (action === "remove"){
   render();
 }
 });
+
+// mode changes
+function resetGameForMode(mode){
+  state.players = [createPlayer(), createPlayer()];
+  state.currentPlayerIndex = 0;
+  state.gameMode = mode;
+  state.bank = { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 };
+  state.currentAction = "take";
+  state.selectedReserveIndex = null;
+  state.gameEnding = false;
+  state.endGameTriggeredBy = null;
+  state.gameOver = false;
+  marketCards = buildShuffledMarketDeck();
+  nobles = buildShuffledNobles();
+
+  for (const color of TAKE_COLORS){
+    selected[color] = 0;
+  }
+
+  setLog(
+    mode === "bot"
+      ? "Game started in Vs Bot mode. Player 1's turn."
+      : "Game started in Multiplayer mode. Player 1's turn."
+  );
+
+  render();
+}
+
+function setGameMode(mode){
+  resetGameForMode(mode);
+}
 
 function createCardHTML(card, index, tier){
   const costHTML = Object.entries(card.cost)
@@ -1610,8 +1684,9 @@ reserveModeButton.addEventListener("click", enterReserveMode);
 confirmReserveButton.addEventListener("click", confirmReserveCard);
 cancelActionButton.addEventListener("click", cancelAction);
 
+modeBotButton.addEventListener("click", () => setGameMode("bot"));
+modeMultiplayerButton.addEventListener("click", () => setGameMode("multiplayer"));
+
 debugEndGameButton.addEventListener("click", debugSetNearEndGame);
 
-setLog("Game started. Player 1's turn.");
-
-render();
+resetGameForMode("bot");
