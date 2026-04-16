@@ -809,8 +809,20 @@ const ALL_NOBLES = [
   }
 ];
 
-let marketCards = [];
+let marketDecks = {
+  1: [],
+  2: [],
+  3: []
+};
 
+let marketBoard = {
+  1: [],
+  2: [],
+  3: []
+};
+
+
+// nobles and decks
 let nobles = [];
 
 function shuffleArray(array){
@@ -824,21 +836,41 @@ function shuffleArray(array){
   return copy;
 }
 
-function buildShuffledMarketDeck(){
-  const tier1 = shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 1));
-  const tier2 = shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 2));
-  const tier3 = shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 3));
-
-  return [...tier3, ...tier2, ...tier1];
+function buildShuffledMarketDecks(){
+  return {
+    1: shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 1)),
+    2: shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 2)),
+    3: shuffleArray(ALL_MARKET_CARDS.filter(card => card.tier === 3))
+  };
 }
 
 function buildShuffledNobles(){
   return shuffleArray(ALL_NOBLES);
 }
 
+function drawCardFromTier(tier){
+  return marketDecks[tier].shift() || null;
+}
+
+function setupMarketBoard(){
+  marketBoard[1] = [];
+  marketBoard[2] = [];
+  marketBoard[3] = [];
+
+  for (let i = 0; i < 4; i++){
+    const c1 = drawCardFromTier(1);
+    const c2 = drawCardFromTier(2);
+    const c3 = drawCardFromTier(3);
+
+    if (c1) marketBoard[1].push(c1);
+    if (c2) marketBoard[2].push(c2);
+    if (c3) marketBoard[3].push(c3);
+  }
+}
+
 const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
-const playerSection = document.querySelector("#player1");
+const currentPlayerSection = document.querySelector("#currentPlayerPanel");
 const selectedTextEl = document.querySelector("#selectedText");
 
 const confirmButton = document.querySelector("#confirmTake");
@@ -851,14 +883,14 @@ const selectedReserveTextEl = document.querySelector("#selectedReserveText");
 const currentPlayerLabelEl = document.querySelector("#currentPlayerLabel");
 
 //bonusChip
-const player1VictoryPointsEl = document.querySelector("#player1VictoryPoints");
+const currentPlayerVictoryPointsEl = document.querySelector("#currentPlayerVictoryPoints");
 
 const bonusChipEl = document.querySelector("#bonusChip");
-const player1RedBonusEl = document.querySelector("#player1RedBonus");
-const player1GreenBonusEl = document.querySelector("#player1GreenBonus");
-const player1BlueBonusEl = document.querySelector("#player1BlueBonus");
-const player1BlackBonusEl = document.querySelector("#player1BlackBonus");
-const player1WhiteBonusEl = document.querySelector("#player1WhiteBonus");
+const currentPlayerRedBonusEl = document.querySelector("#currentPlayerRedBonus");
+const currentPlayerGreenBonusEl = document.querySelector("#currentPlayerGreenBonus");
+const currentPlayerBlueBonusEl = document.querySelector("#currentPlayerBlueBonus");
+const currentPlayerBlackBonusEl = document.querySelector("#currentPlayerBlackBonus");
+const currentPlayerWhiteBonusEl = document.querySelector("#currentPlayerWhiteBonus");
 
 //debug purpose
 const debugEndGameButton = document.querySelector("#debugEndGame");
@@ -905,10 +937,13 @@ function totalChip(obj){
 function render(){
   const player = getCurrentPlayer();
 
-  for (const c of ALL_COLORS){
-    document.querySelector(`#player1${c}Chip`).textContent = player.chips[c];
-    document.querySelector(`#bankRemaining${c}Chip`).textContent = state.bank[c];
+  for (const c of TAKE_COLORS){
+  document.querySelector(`#currentPlayer${c}Chip`).textContent = player.chips[c];
+  document.querySelector(`#bankRemaining${c}Chip`).textContent = state.bank[c];
   }
+
+  document.querySelector("#currentPlayerWildChip").textContent = `Wild Chip: ${player.chips.Wild}`;
+  document.querySelector("#bankRemainingWildChip").textContent = state.bank.Wild;
 
   const parts = [];
   for (const c of TAKE_COLORS){
@@ -927,7 +962,7 @@ function render(){
 
   clearButton.disabled = (selectedTotalChip === 0);
 
-  document.querySelectorAll("#player1 .chipButton").forEach(btn =>{
+  document.querySelectorAll("#currentPlayerPanel .chipButton").forEach(btn =>{
     const action = btn.dataset.action;
     const color = btn.dataset.color;
 
@@ -948,12 +983,17 @@ function render(){
   });
 
   if (state.selectedReserveIndex === null){
-    selectedReserveTextEl.textContent = "none";
-  } else{
-    const card = marketCards.find(card => card.id === state.selectedReserveIndex);
-    selectedReserveTextEl.textContent = card
-      ? `${card.color} | Level ${card.tier} | ${card.points} VP`
-      : "none";
+  selectedReserveTextEl.textContent = "none";
+  
+  } 
+  
+  else {
+  const { cardId, tier } = state.selectedReserveIndex;
+  const card = marketBoard[tier].find(card => card.id === cardId);
+
+  selectedReserveTextEl.textContent = card
+    ? `${card.color} | Level ${card.tier} | ${card.points} VP`
+    : "none";
   }
 
   confirmReserveButton.disabled =
@@ -964,13 +1004,13 @@ function render(){
     cancelActionButton.disabled = (state.currentAction === "take");
     reserveModeButton.disabled = (state.currentAction === "reserve");
 
-  player1VictoryPointsEl.textContent = player.victoryPoints;
+  currentPlayerVictoryPointsEl.textContent = player.victoryPoints;
 
-  player1RedBonusEl.textContent = player.bonusChip.Red;
-  player1GreenBonusEl.textContent = player.bonusChip.Green;
-  player1BlueBonusEl.textContent = player.bonusChip.Blue;
-  player1BlackBonusEl.textContent = player.bonusChip.Black;
-  player1WhiteBonusEl.textContent = player.bonusChip.White;
+  currentPlayerRedBonusEl.textContent = player.bonusChip.Red;
+  currentPlayerGreenBonusEl.textContent = player.bonusChip.Green;
+  currentPlayerBlueBonusEl.textContent = player.bonusChip.Blue;
+  currentPlayerBlackBonusEl.textContent = player.bonusChip.Black;
+  currentPlayerWhiteBonusEl.textContent = player.bonusChip.White;
   
   currentPlayerLabelEl.textContent = `Player ${state.currentPlayerIndex + 1}`;
   currentModeLabelEl.textContent = isBotMode() ? "Vs Bot" : "Multiplayer";
@@ -1115,7 +1155,7 @@ function clearSelection(){
   render();
 }
 
-playerSection.addEventListener("click", (e) =>{
+currentPlayerSection.addEventListener("click", (e) =>{
   if (state.gameOver) return;
   if (isBotTurn()) return;
 
@@ -1160,7 +1200,8 @@ function resetGameForMode(mode){
   state.gameEnding = false;
   state.endGameTriggeredBy = null;
   state.gameOver = false;
-  marketCards = buildShuffledMarketDeck();
+  marketDecks = buildShuffledMarketDecks();
+  setupMarketBoard();
   nobles = buildShuffledNobles();
 
   for (const color of TAKE_COLORS){
@@ -1212,7 +1253,7 @@ function renderNobles(){
 
 function renderCollectedNobles(){
   const player = getCurrentPlayer();
-  const collectedNoblesEl = document.querySelector("#player1CollectedNobles");
+  const collectedNoblesEl = document.querySelector("#currentPlayerCollectedNobles");
 
   if (!collectedNoblesEl) return;
 
@@ -1267,7 +1308,7 @@ const marketAreaEl = document.querySelector("#marketArea");
 const marketTier3El = document.querySelector("#marketTier3");
 const marketTier2El = document.querySelector("#marketTier2");
 const marketTier1El = document.querySelector("#marketTier1");
-const reservedCardsEl = document.querySelector("#player1ReservedCards");
+const reservedCardsEl = document.querySelector("#currentPlayerReservedCards");
 
 //important
 marketAreaEl.addEventListener("click", (e) =>{
@@ -1279,7 +1320,8 @@ marketAreaEl.addEventListener("click", (e) =>{
 
   if (state.currentAction === "reserve"){
   const cardId = cardEl.dataset.id;
-  state.selectedReserveIndex = cardId;
+  const tier = Number(cardEl.dataset.tier);
+  state.selectedReserveIndex = { cardId, tier };
   render();
   return;
 }
@@ -1288,7 +1330,8 @@ marketAreaEl.addEventListener("click", (e) =>{
   if (!btn) return;
 
   const cardId = btn.dataset.id;
-  const card = marketCards.find(card => card.id === cardId);
+  const tier = Number(btn.dataset.tier);
+  const card = marketBoard[tier].find(card => card.id === cardId);
 
   if (!canAffordCard(card)){
   setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this card.`);
@@ -1302,9 +1345,13 @@ marketAreaEl.addEventListener("click", (e) =>{
   payForCard(card);
   applyCardReward(card);
 
-  const cardIndex = marketCards.findIndex(card => card.id === cardId);
+  const cardIndex = marketBoard[tier].findIndex(card => card.id === cardId);
   if (cardIndex === -1) return;
-  marketCards.splice(cardIndex, 1);
+
+  marketBoard[tier].splice(cardIndex, 1);
+
+  const replacement = drawCardFromTier(tier);
+  if (replacement) marketBoard[tier].push(replacement);
 
   player.ownedCards.push(card);
 
@@ -1377,10 +1424,12 @@ function canAffordCard(card){
   return wildNeeded <= player.chips.Wild;
 }
 
+function getVisibleMarketCards(){
+  return [...marketBoard[1], ...marketBoard[2], ...marketBoard[3]];
+}
+
 function getAffordableMarketCards(){
-  return marketCards.filter(card => {
-    return canAffordCard(card);
-  });
+  return getVisibleMarketCards().filter(card => canAffordCard(card));
 }
 
 function payForCard(card){
@@ -1424,7 +1473,7 @@ function chooseBestAffordableCard(cards){
 }
 
 function chooseTargetCardForBot(){
-  const unavailableCards = marketCards.filter(card => !canAffordCard(card));
+  const unavailableCards = getVisibleMarketCards().filter(card => !canAffordCard(card));
 
   if (unavailableCards.length === 0) return null;
 
@@ -1509,9 +1558,13 @@ function botBuyCard(){
   payForCard(chosenCard);
   applyCardReward(chosenCard);
 
-  const cardIndex = marketCards.findIndex(card => card.id === chosenCard.id);
+  const tier = chosenCard.tier;
+  const cardIndex = marketBoard[tier].findIndex(card => card.id === chosenCard.id);
+
   if (cardIndex !== -1){
-    marketCards.splice(cardIndex, 1);
+    marketBoard[tier].splice(cardIndex, 1);
+    const replacement = drawCardFromTier(tier);
+    if (replacement) marketBoard[tier].push(replacement);
   }
 
   player.ownedCards.push(chosenCard);
@@ -1566,7 +1619,7 @@ function claimAvailableNoble(player){
 // reserve card, as well as putting index for easier find
 function renderOwnedCards(){
   const player = getCurrentPlayer();
-  const ownedEl = document.querySelector("#player1OwnedCards");
+  const ownedEl = document.querySelector("#currentPlayerOwnedCards");
 
   ownedEl.innerHTML = player.ownedCards
     .map((card, index) =>{
@@ -1607,15 +1660,19 @@ function confirmReserveCard(){
 
   // fix save card logic
 
-  const card = marketCards.find(card => card.id === state.selectedReserveIndex);
+  const { cardId, tier } = state.selectedReserveIndex;
+  const card = marketBoard[tier].find(card => card.id === cardId);
   if (!card) return;
 
   player.reservedCards.push(card);
 
-  const cardIndex = marketCards.findIndex(card => card.id === state.selectedReserveIndex);
-  
+  const cardIndex = marketBoard[tier].findIndex(card => card.id === cardId);
   if (cardIndex === -1) return;
-  marketCards.splice(cardIndex, 1);
+
+  marketBoard[tier].splice(cardIndex, 1);
+
+  const replacement = drawCardFromTier(tier);
+  if (replacement) marketBoard[tier].push(replacement);
 
   if (state.bank.Wild > 0 && totalChip(player.chips) < 10){
   player.chips.Wild += 1;
@@ -1629,7 +1686,7 @@ function confirmReserveCard(){
 
 function renderReservedCards(){
   const player = getCurrentPlayer();
-  const reservedEl = document.querySelector("#player1ReservedCards");
+  const reservedEl = document.querySelector("#currentPlayerReservedCards");
 
   reservedEl.innerHTML = player.reservedCards
     .map((card, index) =>{
@@ -1650,19 +1707,15 @@ function renderReservedCards(){
 }
 
 function renderMarket(){
-  const tier3Cards = marketCards.filter(card => card.tier === 3).slice(0, 4);
-  const tier2Cards = marketCards.filter(card => card.tier === 2).slice(0, 4);
-  const tier1Cards = marketCards.filter(card => card.tier === 1).slice(0, 4);
-
-  marketTier3El.innerHTML = tier3Cards
+  marketTier3El.innerHTML = marketBoard[3]
     .map((card, index) => createCardHTML(card, index, 3))
     .join("");
 
-  marketTier2El.innerHTML = tier2Cards
+  marketTier2El.innerHTML = marketBoard[2]
     .map((card, index) => createCardHTML(card, index, 2))
     .join("");
 
-  marketTier1El.innerHTML = tier1Cards
+  marketTier1El.innerHTML = marketBoard[1]
     .map((card, index) => createCardHTML(card, index, 1))
     .join("");
 }
