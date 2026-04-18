@@ -872,6 +872,7 @@ const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
 const currentPlayerSection = document.querySelector("#currentPlayerPanel");
 const selectedTextEl = document.querySelector("#selectedText");
+const playersOverviewEl = document.querySelector("#playersOverview");
 
 const confirmButton = document.querySelector("#confirmTake");
 const clearButton = document.querySelector("#clearTake");
@@ -1020,6 +1021,7 @@ function render(){
   renderReservedCards();
   renderNobles();
   renderCollectedNobles();
+  renderPlayersOverview();
 
   if (state.gameOver){
   confirmButton.disabled = true;
@@ -1280,6 +1282,35 @@ function renderCollectedNobles(){
   .join("");
 }
 
+function renderPlayersOverview(){
+  if (!playersOverviewEl) return;
+
+  playersOverviewEl.innerHTML = state.players.map((player, index) => {
+    const isCurrent = index === state.currentPlayerIndex;
+    const roleLabel = isBotMode() && index === state.botPlayerIndex
+      ? "Bot"
+      : `Player ${index + 1}`;
+
+    const chipText = TAKE_COLORS
+      .map(color => `${color}: ${player.chips[color]}`)
+      .join(" | ");
+
+    const bonusText = BONUS_COLORS
+      .map(color => `${color}: ${player.bonusChip[color]}`)
+      .join(" | ");
+
+    return `
+      <div class="player-overview-card ${isCurrent ? "is-current" : ""}">
+        <div><strong>${roleLabel}</strong>${isCurrent ? " (Current Turn)" : ""}</div>
+        <div>VP: ${player.victoryPoints}</div>
+        <div>Chips: ${chipText} | Wild: ${player.chips.Wild}</div>
+        <div>Bonuses: ${bonusText}</div>
+        <div>Owned: ${player.ownedCards.length} | Reserved: ${player.reservedCards.length} | Nobles: ${player.nobles.length}</div>
+      </div>
+    `;
+  }).join("");
+}
+
 function createNobleHTML(noble){
   const requirementHTML = Object.entries(noble.requiredBonuses)
     .filter(([color, amount]) => amount > 0)
@@ -1319,11 +1350,11 @@ marketAreaEl.addEventListener("click", (e) =>{
   if (!cardEl) return;
 
   if (state.currentAction === "reserve"){
-  const cardId = cardEl.dataset.id;
-  const tier = Number(cardEl.dataset.tier);
-  state.selectedReserveIndex = { cardId, tier };
-  render();
-  return;
+    const cardId = cardEl.dataset.id;
+    const tier = Number(cardEl.dataset.tier);
+    state.selectedReserveIndex = { cardId, tier };
+    render();
+    return;
 }
 
   const btn = e.target.closest(".buyCardButton");
@@ -1334,8 +1365,8 @@ marketAreaEl.addEventListener("click", (e) =>{
   const card = marketBoard[tier].find(card => card.id === cardId);
 
   if (!canAffordCard(card)){
-  setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this card.`);
-  return;
+    setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this card.`);
+    return;
 }
 
   const player = getCurrentPlayer();
@@ -1367,7 +1398,7 @@ marketAreaEl.addEventListener("click", (e) =>{
   endTurn();
 });
 
-  reservedCardsEl.addEventListener("click", (e) =>{
+reservedCardsEl.addEventListener("click", (e) =>{
   if (state.gameOver) return;
   if (isBotTurn()) return;
 
@@ -1690,6 +1721,13 @@ function renderReservedCards(){
 
   reservedEl.innerHTML = player.reservedCards
     .map((card, index) =>{
+      const costHTML = Object.entries(card.cost)
+        .filter(([color, amount]) => amount > 0)
+        .map(([color, amount]) => {
+          return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
+        })
+        .join("");
+
       return `
         <div class="card">
           <div class="card-top">
@@ -1698,6 +1736,9 @@ function renderReservedCards(){
           </div>
           <div class="card-middle">
             <div>Level ${card.tier}</div>
+          </div>
+          <div class="card-costs">
+            ${costHTML}
           </div>
           <button class="buyReservedCardButton" data-index="${index}">Buy Reserved</button>
         </div>

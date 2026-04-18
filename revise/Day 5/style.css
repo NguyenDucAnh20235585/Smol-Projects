@@ -84,3 +84,19 @@
   min-height: 170px;
   box-sizing: border-box;
 }
+
+#playersOverview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.player-overview-card {
+  border: 1px solid #999;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.player-overview-card.is-current {
+  border-width: 2px;
+}
