@@ -3,8 +3,9 @@ const ALL_COLORS = ["Red", "Green", "Blue", "Black", "White", "Wild"];
 
 const BONUS_COLORS = ["Red", "Green", "Blue", "Black", "White"];
 
-function createPlayer() {
+function createPlayer(type = "human") {
   return {
+    type,
     chips: Object.fromEntries(ALL_COLORS.map(c => [c, 0])),
     victoryPoints: 0,
     bonusChip: Object.fromEntries(BONUS_COLORS.map(c => [c, 0])),
@@ -14,13 +15,19 @@ function createPlayer() {
   };
 }
 
+function createPlayers(playerCount){
+  return Array.from({ length: playerCount }, (_, index) => {
+    return createPlayer(index === 0 ? "human" : "bot");
+  });
+}
+
 const state = {
-  players: [createPlayer(), createPlayer()],
+  players: [],
   currentPlayerIndex: 0,
+  playerCount: 3,
   humanPlayerIndex: 0,
-  botPlayerIndex: 1,
   gameMode: "bot",
-  bank: { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 },
+  bank: {},
   currentAction: "take",
   selectedReserveIndex: null,
   gameEnding: false,
@@ -30,7 +37,7 @@ const state = {
 
 //support for bot
 function isBotTurn(){
-  return isBotMode() && state.currentPlayerIndex === state.botPlayerIndex;
+  return isBotMode() && getCurrentPlayer().type === "bot";
 }
 
 function isBotMode(){
@@ -917,8 +924,8 @@ function debugSetNearEndGame(){
   player.bonusChip.Red = 3;
   player.bonusChip.Green = 3;
   player.bonusChip.Blue = 3;
-  player.bonusChip.Black = 0;
-  player.bonusChip.White = 0;
+  player.bonusChip.Black = 3;
+  player.bonusChip.White = 3;
 
   player.chips.Red = 3;
   player.chips.Green = 3;
@@ -933,6 +940,27 @@ function debugSetNearEndGame(){
 
 function totalChip(obj){
   return Object.values(obj).reduce((a, b) => a + b, 0);
+}
+
+function getNobleCount(playerCount){
+  return playerCount + 1;
+}
+
+function createBank(playerCount){
+  let colorChipCount = 7;
+
+  if (playerCount === 2) colorChipCount = 4;
+  else if (playerCount === 3) colorChipCount = 5;
+  else if (playerCount === 4) colorChipCount = 7;
+
+  return {
+    Red: colorChipCount,
+    Green: colorChipCount,
+    Blue: colorChipCount,
+    Black: colorChipCount,
+    White: colorChipCount,
+    Wild: 5
+  };
 }
 
 function render(){
@@ -1193,18 +1221,19 @@ if (action === "remove"){
 
 // mode changes
 function resetGameForMode(mode){
-  state.players = [createPlayer(), createPlayer()];
+  state.players = createPlayers(state.playerCount);
   state.currentPlayerIndex = 0;
   state.gameMode = mode;
-  state.bank = { Red: 7, Green: 7, Blue: 7, Black: 7, White: 7, Wild: 5 };
+  state.bank = createBank(state.playerCount);
   state.currentAction = "take";
   state.selectedReserveIndex = null;
   state.gameEnding = false;
   state.endGameTriggeredBy = null;
   state.gameOver = false;
+
   marketDecks = buildShuffledMarketDecks();
   setupMarketBoard();
-  nobles = buildShuffledNobles();
+  nobles = buildShuffledNobles().slice(0, getNobleCount(state.playerCount));
 
   for (const color of TAKE_COLORS){
     selected[color] = 0;
@@ -1250,7 +1279,7 @@ function createCardHTML(card, index, tier){
 
 function renderNobles(){
   const noblesEl = document.querySelector("#noblesArea");
-  noblesEl.innerHTML = nobles.slice(0, 5).map(createNobleHTML).join("");
+  noblesEl.innerHTML = nobles.map(createNobleHTML).join("");
 }
 
 function renderCollectedNobles(){
@@ -1287,10 +1316,13 @@ function renderPlayersOverview(){
 
   playersOverviewEl.innerHTML = state.players.map((player, index) => {
     const isCurrent = index === state.currentPlayerIndex;
-    const roleLabel = isBotMode() && index === state.botPlayerIndex
-      ? "Bot"
-      : `Player ${index + 1}`;
+    const botNumber = state.players
+    .slice(0, index + 1)
+    .filter(p => p.type === "bot").length;
 
+    const roleLabel = player.type === "bot"
+      ? `Bot ${botNumber}`
+      : "You";
     const chipText = TAKE_COLORS
       .map(color => `${color}: ${player.chips[color]}`)
       .join(" | ");
