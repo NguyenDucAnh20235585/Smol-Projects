@@ -1091,15 +1091,27 @@ function isValidTakeSelection(){
 function finishGame(){
   state.gameOver = true;
 
-  const player1 = state.players[0];
-  const player2 = state.players[1];
+  const maxPoints = Math.max(...state.players.map(player => player.victoryPoints));
 
-  if (player1.victoryPoints > player2.victoryPoints){
-    setLog(`Game over. Player 1 wins with ${player1.victoryPoints} points against ${player2.victoryPoints}.`);
-  } else if (player2.victoryPoints > player1.victoryPoints){
-    setLog(`Game over. Player 2 wins with ${player2.victoryPoints} points against ${player1.victoryPoints}.`);
+  const winners = state.players
+    .map((player, index) => ({ player, index }))
+    .filter(({ player }) => player.victoryPoints === maxPoints);
+
+  if (winners.length === 1){
+    const winner = winners[0];
+    const label = winner.player.type === "bot"
+      ? `Bot ${state.players.slice(0, winner.index + 1).filter(p => p.type === "bot").length}`
+      : "You";
+
+    setLog(`Game over. ${label} wins with ${winner.player.victoryPoints} points.`);
   } else {
-    setLog(`Game over. Draw ${player1.victoryPoints} - ${player2.victoryPoints}.`);
+    const labels = winners.map(({ player, index }) => {
+      return player.type === "bot"
+        ? `Bot ${state.players.slice(0, index + 1).filter(p => p.type === "bot").length}`
+        : "You";
+    });
+
+    setLog(`Game over. Draw between ${labels.join(", ")} with ${maxPoints} points.`);
   }
 
   render();
