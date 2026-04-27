@@ -9,19 +9,28 @@
 
 <body>
 
-  <div id="gameLog">Game started. Player 1's turn.</div>
-
-  <div id="modePanel" class="panel">
-  <h2>Game Mode</h2>
-  <button id="modeBot">Vs Bot</button>
-  <button id="modeMultiplayer">Multiplayer</button>
-  <div>Current mode: <span id="currentModeLabel">Vs Bot</span></div>
+  <div id="setupScreen">
+  <h1>Splendor</h1>
+  <button id="startBotMode">Single Player</button>
+  <button id="startMultiplayerMode">Multiplayer</button>
+  <div class="setupField">
+  <label for="playerCountSelect">Total Players</label>
+  <select id="playerCountSelect">
+    <option value="2">2 Players</option>
+    <option value="3" selected>3 Players</option>
+    <option value="4">4 Players</option>
+  </select>
+  </div>
   </div>
 
+  <div id="gameScreen">
+
+  <div id="leftSection">
   <section id="playersOverviewPanel" class="panel">
   <h2>Players Overview</h2>
   <div id="playersOverview"></div>
   </section>
+  </div>
 
   <section id="noblesPanel" class="panel">
     <h2>Nobles</h2>
@@ -36,7 +45,38 @@
       <div id="marketTier1"></div>
     </div>
   </section>
+
+  <div id="middleSection">
+  <section id = "banker" class="panel">
+    <div class="row">
+      <span id="bankRemainingRedChip">7</span>
+    </div>
+
+    <div class="row">
+      <span id="bankRemainingGreenChip">7</span>
+    </div>
+
+    <div class="row">
+      <span id="bankRemainingBlueChip">7</span>
+    </div>
+
+    <div class="row">
+      <span id="bankRemainingBlackChip">7</span>
+    </div>
+
+    <div class="row">
+      <span id="bankRemainingWhiteChip">7</span>
+    </div>
+    
+    <div class="row">
+      <span id="bankRemainingWildChip">5</span>
+    </div>
+  </section>
+
+  </div>
   
+  <div id="rightSection">
+
   <section id="currentPlayerPanel" class="panel">
 
     <div class="row">
@@ -90,6 +130,17 @@
     </div>
   </section>
 
+  <div id="gameLog">Game started. Player 1's turn.</div>
+
+  <div id="modePanel" class="panel">
+  <h2>Game Mode</h2>
+  <button id="modeBot">Vs Bot</button>
+  <button id="modeMultiplayer">Multiplayer</button>
+  <div>Current mode: <span id="currentModeLabel">Vs Bot</span></div>
+  </div>
+  </div>
+  
+  <div id="bottomSection">
   <div id="takePanel" class="panel">
     <div>Selected: <span id="selectedText">none</span></div>
     <button id="confirmTake">Confirm Take</button>
@@ -115,32 +166,8 @@
       <div id="currentPlayerCollectedNobles"></div>
     </div>
 
-  <section id = "banker" class="panel">
-    <div class="row">
-      <span id="bankRemainingRedChip">7</span>
     </div>
-
-    <div class="row">
-      <span id="bankRemainingGreenChip">7</span>
-    </div>
-
-    <div class="row">
-      <span id="bankRemainingBlueChip">7</span>
-    </div>
-
-    <div class="row">
-      <span id="bankRemainingBlackChip">7</span>
-    </div>
-
-    <div class="row">
-      <span id="bankRemainingWhiteChip">7</span>
-    </div>
-    
-    <div class="row">
-      <span id="bankRemainingWildChip">5</span>
-    </div>
-  </section>
-
+  </div>
 <script src="index.js"></script>
 
 </body>

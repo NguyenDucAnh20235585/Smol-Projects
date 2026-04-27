@@ -29,11 +29,23 @@ const state = {
   gameMode: "bot",
   bank: {},
   currentAction: "take",
+  screen: "setup",
   selectedReserveIndex: null,
   gameEnding: false,
   endGameTriggeredBy: null,
   gameOver: false
 };
+
+//setup phase
+function showSetupScreen(){
+  document.querySelector("#setupScreen").style.display = "block";
+  document.querySelector("#gameScreen").style.display = "none";
+}
+
+function showGameScreen(){
+  document.querySelector("#setupScreen").style.display = "none";
+  document.querySelector("#gameScreen").style.display = "block";
+}
 
 //support for bot
 function isBotTurn(){
@@ -875,6 +887,12 @@ function setupMarketBoard(){
   }
 }
 
+//setup
+const startBotModeButton = document.querySelector("#startBotMode");
+const startMultiplayerModeButton = document.querySelector("#startMultiplayerMode");
+const playerCountSelect = document.querySelector("#playerCountSelect");
+
+//take chips
 const selected = Object.fromEntries(TAKE_COLORS.map(c => [c, 0]));
 
 const currentPlayerSection = document.querySelector("#currentPlayerPanel");
@@ -910,6 +928,23 @@ const currentModeLabelEl = document.querySelector("#currentModeLabel");
 
 //log
 const gameLogEl = document.querySelector("#gameLog");
+
+function startConfiguredGame(mode){
+  state.playerCount = Number(playerCountSelect.value);
+  state.gameMode = mode;
+  state.screen = "game";
+
+  resetGameForMode(mode);
+  showGameScreen();
+}
+
+startBotModeButton.addEventListener("click", () => {
+  startConfiguredGame("bot");
+});
+
+startMultiplayerModeButton.addEventListener("click", () => {
+  startConfiguredGame("multiplayer");
+});
 
 function setLog(message){
   gameLogEl.textContent = message;
@@ -1827,4 +1862,4 @@ modeMultiplayerButton.addEventListener("click", () => setGameMode("multiplayer")
 
 debugEndGameButton.addEventListener("click", debugSetNearEndGame);
 
-resetGameForMode("bot");
+showSetupScreen();
