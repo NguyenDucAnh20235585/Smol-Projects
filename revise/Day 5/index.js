@@ -44,7 +44,7 @@ function showSetupScreen(){
 
 function showGameScreen(){
   document.querySelector("#setupScreen").style.display = "none";
-  document.querySelector("#gameScreen").style.display = "block";
+  document.querySelector("#gameScreen").style.display = "grid";
 }
 
 //support for bot
@@ -62,6 +62,20 @@ function isMultiplayerMode(){
 
 function getCurrentPlayer() {
   return state.players[state.currentPlayerIndex];
+}
+
+function getPlayerDisplayName(index){
+  const player = state.players[index];
+
+  if (player.type === "human"){
+    return "You";
+  }
+
+  const botNumber = state.players
+    .slice(0, index + 1)
+    .filter(p => p.type === "bot").length;
+
+  return `Bot ${botNumber}`;
 }
 
 //basic card
@@ -1126,27 +1140,38 @@ function isValidTakeSelection(){
 function finishGame(){
   state.gameOver = true;
 
-  const maxPoints = Math.max(...state.players.map(player => player.victoryPoints));
-
-  const winners = state.players
+  const rankedPlayers = state.players
     .map((player, index) => ({ player, index }))
-    .filter(({ player }) => player.victoryPoints === maxPoints);
+    .sort((a, b) => {
+      if (b.player.victoryPoints !== a.player.victoryPoints){
+        return b.player.victoryPoints - a.player.victoryPoints;
+      }
+
+      return a.player.ownedCards.length - b.player.ownedCards.length;
+    });
+
+  const best = rankedPlayers[0];
+
+  const winners = rankedPlayers.filter(({ player }) => {
+    return (
+      player.victoryPoints === best.player.victoryPoints &&
+      player.ownedCards.length === best.player.ownedCards.length
+    );
+  });
 
   if (winners.length === 1){
     const winner = winners[0];
-    const label = winner.player.type === "bot"
-      ? `Bot ${state.players.slice(0, winner.index + 1).filter(p => p.type === "bot").length}`
-      : "You";
+    const label = getPlayerDisplayName(winner.index);
 
-    setLog(`Game over. ${label} wins with ${winner.player.victoryPoints} points.`);
+    setLog(
+      `Game over. ${label} wins with ${winner.player.victoryPoints} points and ${winner.player.ownedCards.length} owned cards.`
+    );
   } else {
-    const labels = winners.map(({ player, index }) => {
-      return player.type === "bot"
-        ? `Bot ${state.players.slice(0, index + 1).filter(p => p.type === "bot").length}`
-        : "You";
-    });
+    const labels = winners.map(({ index }) => getPlayerDisplayName(index));
 
-    setLog(`Game over. Draw between ${labels.join(", ")} with ${maxPoints} points.`);
+    setLog(
+      `Game over. Draw between ${labels.join(", ")} with ${best.player.victoryPoints} points and ${best.player.ownedCards.length} owned cards.`
+    );
   }
 
   render();
@@ -1209,8 +1234,9 @@ function confirmTake(){
   const playerTotalChip = totalChip(player.chips);
   const selectedTotalChip = totalChip(selected);
 
-  const currentPlayerNumber = state.currentPlayerIndex + 1;
-  const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
+  const currentPlayerName = getPlayerDisplayName(state.currentPlayerIndex);
+  const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  const nextPlayerName = getPlayerDisplayName(nextPlayerIndex);
 
   const takenParts = TAKE_COLORS
     .filter(c => selected[c] > 0)
@@ -1223,7 +1249,7 @@ function confirmTake(){
 
   applyTakeSelection();
 
-  setLog(`Player ${currentPlayerNumber} took ${takenParts.join(", ")}. Player ${nextPlayerNumber}'s turn.`);
+  setLog(`${currentPlayerName} took ${takenParts.join(", ")}. ${nextPlayerName}'s turn.`);
   endTurn();
 }
 
@@ -1653,7 +1679,10 @@ function botTakeChips(){
   if (takenParts.length === 0) return;
 
   applyTakeSelection();
-  setLog(`Bot took ${takenParts.join(", ")}.`);
+
+  const botName = getPlayerDisplayName(state.currentPlayerIndex);
+  setLog(`${botName} took ${takenParts.join(", ")}.`);
+
   endTurn();
 }
 
@@ -1681,10 +1710,12 @@ function botBuyCard(){
 
   const claimedNoble = claimAvailableNoble(player);
 
+  const botName = getPlayerDisplayName(state.currentPlayerIndex);
+
   if (claimedNoble){
-    setLog(`Bot bought ${chosenCard.color} (${chosenCard.points} VP) and claimed ${claimedNoble.id}.`);
+    setLog(`${botName} bought ${chosenCard.color} (${chosenCard.points} VP) and claimed ${claimedNoble.id}.`);
   } else {
-    setLog(`Bot bought ${chosenCard.color} (${chosenCard.points} VP).`);
+    setLog(`${botName} bought ${chosenCard.color} (${chosenCard.points} VP).`);
   }
 
   endTurn();

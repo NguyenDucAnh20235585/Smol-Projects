@@ -1,10 +1,20 @@
-.card{
-  width: 150px;
-  min-width: 150px;
-  padding: 10px;
+body{
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f3efe6;
+  color: #222;
+}
+
+.card {
+  width: 100%;
+  min-width: 0;
+  min-height: 125px;
+  padding: 8px;
   border: 1px solid #999;
   border-radius: 10px;
   box-sizing: border-box;
+  background: rgba(255, 250, 240, 0.9);
 }
 
 .card-top{
@@ -58,11 +68,11 @@
 
 #marketTier3,
 #marketTier2,
-#marketTier1{
-  display: flex;
-  gap: 12px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+#marketTier1 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+  overflow: visible;
   padding-bottom: 4px;
 }
 
@@ -71,17 +81,17 @@
 }
 
 .nobles-row {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 12px;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+  overflow: visible;
   align-items: stretch;
 }
 
 #noblesArea .card {
-  width: 180px;
-  min-width: 180px;
-  min-height: 170px;
+  width: 100%;
+  min-width: 0;
+  min-height: 120px;
   box-sizing: border-box;
 }
 
@@ -99,4 +109,184 @@
 
 .player-overview-card.is-current {
   border-width: 2px;
+}
+
+#gameScreen {
+  display: grid;
+  grid-template-columns: 260px minmax(640px, 1fr) 320px;
+  grid-template-areas:
+    "left center right"
+    "bank center right";
+  gap: 12px;
+  align-items: start;
+}
+
+#leftSection {
+  grid-area: left;
+}
+
+#noblesPanel {
+  grid-area: center;
+}
+
+#market {
+  grid-area: center;
+  margin-top: 220px;
+}
+
+#middleSection {
+  grid-area: bank;
+}
+
+#modePanel {
+  display: none;
+}
+
+#rightSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  grid-area: right;
+}
+
+#gameLog {
+  background: rgba(255, 250, 240, 0.92);
+  border: 1px solid #d2c2a5;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 80px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+#currentPlayerPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#currentPlayerPanel .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+#bonusChip {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #ddd0b8;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.chipButton,
+#confirmTake,
+#clearTake,
+#reserveModeButton,
+#confirmReserve,
+#cancelAction,
+#debugEndGame,
+.buyCardButton,
+.buyReservedCardButton {
+  cursor: pointer;
+  border: 1px solid #9c8f78;
+  border-radius: 8px;
+  background: #fffaf0;
+  padding: 5px 8px;
+}
+
+.chipButton:hover,
+#confirmTake:hover,
+#clearTake:hover,
+#reserveModeButton:hover,
+#confirmReserve:hover,
+#cancelAction:hover,
+#debugEndGame:hover,
+.buyCardButton:hover,
+.buyReservedCardButton:hover {
+  background: #efe2c8;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.panel,
+#market,
+#gameLog {
+  background: rgba(255, 250, 240, 0.92);
+  border: 1px solid #d2c2a5;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.panel h2,
+#market h2,
+.collected-nobles-panel h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+#gameLog {
+  min-height: 80px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.action-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bank-label {
+  min-width: 70px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+}
+
+.bank-label.white {
+  background: azure;
+  color: black;
+}
+
+.bank-label.wild {
+  background: gold;
+  color: black;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border: 1px solid #d2c2a5;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+#banker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }

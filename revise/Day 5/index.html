@@ -25,6 +25,13 @@
 
   <div id="gameScreen">
 
+  <div id="modePanel" class="panel">
+  <h2>Game Mode</h2>
+  <button id="modeBot">Vs Bot</button>
+  <button id="modeMultiplayer">Multiplayer</button>
+  <div>Current mode: <span id="currentModeLabel">Vs Bot</span></div>
+  </div>
+
   <div id="leftSection">
   <section id="playersOverviewPanel" class="panel">
   <h2>Players Overview</h2>
@@ -47,30 +54,38 @@
   </section>
 
   <div id="middleSection">
-  <section id = "banker" class="panel">
-    <div class="row">
-      <span id="bankRemainingRedChip">7</span>
-    </div>
+    <section id="banker" class="panel">
+  <h2>Bank</h2>
 
-    <div class="row">
-      <span id="bankRemainingGreenChip">7</span>
-    </div>
+  <div class="bank-row">
+    <span class="bank-label red">Red</span>
+    <span id="bankRemainingRedChip">7</span>
+  </div>
 
-    <div class="row">
-      <span id="bankRemainingBlueChip">7</span>
-    </div>
+  <div class="bank-row">
+    <span class="bank-label green">Green</span>
+    <span id="bankRemainingGreenChip">7</span>
+  </div>
 
-    <div class="row">
-      <span id="bankRemainingBlackChip">7</span>
-    </div>
+  <div class="bank-row">
+    <span class="bank-label blue">Blue</span>
+    <span id="bankRemainingBlueChip">7</span>
+  </div>
 
-    <div class="row">
-      <span id="bankRemainingWhiteChip">7</span>
-    </div>
-    
-    <div class="row">
-      <span id="bankRemainingWildChip">5</span>
-    </div>
+  <div class="bank-row">
+    <span class="bank-label black">Black</span>
+    <span id="bankRemainingBlackChip">7</span>
+  </div>
+
+  <div class="bank-row">
+    <span class="bank-label white">White</span>
+    <span id="bankRemainingWhiteChip">7</span>
+  </div>
+  
+  <div class="bank-row">
+    <span class="bank-label wild">Wild</span>
+    <span id="bankRemainingWildChip">5</span>
+  </div>
   </section>
 
   </div>
@@ -79,7 +94,8 @@
 
   <section id="currentPlayerPanel" class="panel">
 
-    <div class="row">
+    <div class="stat-row">
+      <strong>Victory Points</strong>
       <span id="currentPlayerVictoryPoints">0</span>
     </div>
 
@@ -130,43 +146,39 @@
     </div>
   </section>
 
-  <div id="gameLog">Game started. Player 1's turn.</div>
-
-  <div id="modePanel" class="panel">
-  <h2>Game Mode</h2>
-  <button id="modeBot">Vs Bot</button>
-  <button id="modeMultiplayer">Multiplayer</button>
-  <div>Current mode: <span id="currentModeLabel">Vs Bot</span></div>
-  </div>
-  </div>
-  
-  <div id="bottomSection">
-  <div id="takePanel" class="panel">
+    <div id="takePanel" class="panel action-panel">
     <div>Selected: <span id="selectedText">none</span></div>
-    <button id="confirmTake">Confirm Take</button>
-    <button id="clearTake">Clear</button>
+    <div class="action-buttons">
+      <button id="confirmTake">Confirm Take</button>
+      <button id="clearTake">Clear</button>
+    </div>
     <div id="takeError"></div>
   </div>
 
-  <div id="reservePanel" class="panel">
-    <button id="reserveModeButton">Reserve Card</button>
-    <button id="confirmReserve">Confirm Reserve</button>
-    <button id="cancelAction">Cancel</button>
-    <button id="debugEndGame">Debug End Game</button>
+  <div id="reservePanel" class="panel action-panel">
+    <div class="action-buttons">
+      <button id="reserveModeButton">Reserve Card</button>
+      <button id="confirmReserve">Confirm Reserve</button>
+      <button id="cancelAction">Cancel</button>
+      <button id="debugEndGame">Debug End Game</button>
+    </div>
     <div>Selected reserve card: <span id="selectedReserveText">none</span></div>
   </div>
 
-    <section id="ReservedCardsPanel" class="panel">
-      <h2>Reserved Cards</h2>
-      <div id="currentPlayerReservedCards"></div>
-    </section>
+  <section id="ReservedCardsPanel" class="panel">
+    <h2>Reserved Cards</h2>
+    <div id="currentPlayerReservedCards"></div>
+  </section>
 
-    <div class="collected-nobles-panel">
-      <h3>Collected Nobles</h3>
-      <div id="currentPlayerCollectedNobles"></div>
-    </div>
+  <div class="collected-nobles-panel panel">
+    <h3>Collected Nobles</h3>
+    <div id="currentPlayerCollectedNobles"></div>
+  </div>
 
-    </div>
+  <div id="gameLog">Game started. Player 1's turn.</div>
+
+  </div>
+
   </div>
 <script src="index.js"></script>
 
