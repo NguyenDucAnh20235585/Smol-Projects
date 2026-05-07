@@ -113,10 +113,8 @@ body{
 
 #gameScreen {
   display: grid;
-  grid-template-columns: 260px minmax(640px, 1fr) 320px;
-  grid-template-areas:
-    "left center right"
-    "bank center right";
+  grid-template-columns: 260px minmax(640px, 1fr) 340px;
+  grid-template-areas: "left middle right";
   gap: 12px;
   align-items: start;
 }
@@ -125,28 +123,18 @@ body{
   grid-area: left;
 }
 
-#noblesPanel {
-  grid-area: center;
-}
-
-#market {
-  grid-area: center;
-  margin-top: 220px;
-}
-
 #middleSection {
-  grid-area: bank;
-}
-
-#modePanel {
-  display: none;
-}
-
-#rightSection {
+  grid-area: middle;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+#rightSection {
   grid-area: right;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 #gameLog {
@@ -285,8 +273,106 @@ button:disabled {
   background: rgba(255, 255, 255, 0.45);
 }
 
-#banker {
+#bankPanel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+}
+
+#bankPanel h2 {
+  margin: 0;
+  font-size: 16px;
+  min-width: 44px;
+}
+
+#bankChips {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bank-chip {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font-weight: bold;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+}
+
+.bank-chip-label {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.bank-chip span:last-child {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.bank-chip.red {
+  background: #c94a4a;
+  color: white;
+}
+
+.bank-chip.green {
+  background: #4f9d69;
+  color: white;
+}
+
+.bank-chip.blue {
+  background: #4a78c9;
+  color: white;
+}
+
+.bank-chip.black {
+  background: black;
+  color: white;
+}
+
+.bank-chip.white {
+  background: azure;
+  color: black;
+}
+
+.bank-chip.wild {
+  background: gold;
+  color: black;
+}
+
+#modePanel {
+  display: none;
+}
+
+.player-chip-row {
+  display: grid !important;
+  grid-template-columns: 70px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.player-chip-label {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.player-chip-label.red,
+.player-chip-label.green,
+.player-chip-label.blue,
+.player-chip-label.black {
+  color: white;
+}
+
+.player-chip-label.white {
+  background: azure;
+  color: black;
 }

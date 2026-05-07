@@ -39,6 +39,44 @@
   </section>
   </div>
 
+  <div id="middleSection">
+
+  <section id="bankPanel" class="panel">
+    <h2>Bank</h2>
+
+    <div id="bankChips">
+      <div class="bank-chip red">
+        <span class="bank-chip-label">Red</span>
+        <span id="bankRemainingRedChip">7</span>
+      </div>
+
+      <div class="bank-chip green">
+        <span class="bank-chip-label">Green</span>
+        <span id="bankRemainingGreenChip">7</span>
+      </div>
+
+      <div class="bank-chip blue">
+        <span class="bank-chip-label">Blue</span>
+        <span id="bankRemainingBlueChip">7</span>
+      </div>
+
+      <div class="bank-chip black">
+        <span class="bank-chip-label">Black</span>
+        <span id="bankRemainingBlackChip">7</span>
+      </div>
+
+      <div class="bank-chip white">
+        <span class="bank-chip-label">White</span>
+        <span id="bankRemainingWhiteChip">7</span>
+      </div>
+
+      <div class="bank-chip wild">
+        <span class="bank-chip-label">Wild</span>
+        <span id="bankRemainingWildChip">5</span>
+      </div>
+    </div>
+  </section>
+
   <section id="noblesPanel" class="panel">
     <h2>Nobles</h2>
     <div id="noblesArea" class="nobles-row"></div>
@@ -53,46 +91,17 @@
     </div>
   </section>
 
-  <div id="middleSection">
-    <section id="banker" class="panel">
-  <h2>Bank</h2>
-
-  <div class="bank-row">
-    <span class="bank-label red">Red</span>
-    <span id="bankRemainingRedChip">7</span>
-  </div>
-
-  <div class="bank-row">
-    <span class="bank-label green">Green</span>
-    <span id="bankRemainingGreenChip">7</span>
-  </div>
-
-  <div class="bank-row">
-    <span class="bank-label blue">Blue</span>
-    <span id="bankRemainingBlueChip">7</span>
-  </div>
-
-  <div class="bank-row">
-    <span class="bank-label black">Black</span>
-    <span id="bankRemainingBlackChip">7</span>
-  </div>
-
-  <div class="bank-row">
-    <span class="bank-label white">White</span>
-    <span id="bankRemainingWhiteChip">7</span>
-  </div>
-  
-  <div class="bank-row">
-    <span class="bank-label wild">Wild</span>
-    <span id="bankRemainingWildChip">5</span>
-  </div>
-  </section>
-
   </div>
   
   <div id="rightSection">
 
+  <div id="gameLog">Game started. Player 1's turn.</div>
+
   <section id="currentPlayerPanel" class="panel">
+
+    <div id="turnStatus" class="panel">
+    Current turn: <span id="currentPlayerLabel">Player 1</span>
+    </div>
 
     <div class="stat-row">
       <strong>Victory Points</strong>
@@ -104,10 +113,6 @@
       <div id="currentPlayerOwnedCards"></div>
     </section>
 
-    <div id="turnStatus" class="panel">
-    Current turn: <span id="currentPlayerLabel">Player 1</span>
-    </div>
-
     <div class="column" id="bonusChip">
       <div>Red bonus: <span id="currentPlayerRedBonus">0</span></div>
       <div>Green bonus: <span id="currentPlayerGreenBonus">0</span></div>
@@ -116,37 +121,43 @@
       <div>White bonus: <span id="currentPlayerWhiteBonus">0</span></div>
     </div>
 
-    <div class="row">
+    <div class="row player-chip-row">
+      <span class="player-chip-label-red">Red</span>
       <span id="currentPlayerRedChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Red">Take Red</button>
+      <button class="chipButton" data-action="add" data-color="Red">Take</button>
     </div>
 
-    <div class="row">
+    <div class="row player-chip-row">
+      <span class="player-chip-label-green">Green</span>
       <span id="currentPlayerGreenChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Green">Take Green</button>
+      <button class="chipButton" data-action="add" data-color="Green">Take</button>
     </div>
 
-    <div class="row">
+    <div class="row player-chip-row">
+      <span class="player-chip-label-blue">Blue</span>
       <span id="currentPlayerBlueChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Blue">Take Blue</button>
+      <button class="chipButton" data-action="add" data-color="Blue">Take</button>
     </div>
 
-    <div class="row">
+    <div class="row player-chip-row">
+      <span class="player-chip-label-black">Black</span>
       <span id="currentPlayerBlackChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Black">Take Black</button>
+      <button class="chipButton" data-action="add" data-color="Black">Take</button>
     </div>
 
-    <div class="row">
+    <div class="row player-chip-row">
+      <span class="player-chip-label-white">White</span>
       <span id="currentPlayerWhiteChip">0</span>
-      <button class="chipButton" data-action="add" data-color="White">Take White</button>
+      <button class="chipButton" data-action="add" data-color="White">Take</button>
     </div>
 
     <div class="row">
-      <span id="currentPlayerWildChip">Wild Chip: 0</span>
+      <span id="currentPlayerWildChip">Wild: 0</span>
     </div>
   </section>
 
     <div id="takePanel" class="panel action-panel">
+      <h2>Take Action</h2>
     <div>Selected: <span id="selectedText">none</span></div>
     <div class="action-buttons">
       <button id="confirmTake">Confirm Take</button>
@@ -156,6 +167,7 @@
   </div>
 
   <div id="reservePanel" class="panel action-panel">
+    <h2>Reserve Action</h2>
     <div class="action-buttons">
       <button id="reserveModeButton">Reserve Card</button>
       <button id="confirmReserve">Confirm Reserve</button>
@@ -174,8 +186,6 @@
     <h3>Collected Nobles</h3>
     <div id="currentPlayerCollectedNobles"></div>
   </div>
-
-  <div id="gameLog">Game started. Player 1's turn.</div>
 
   </div>
 
