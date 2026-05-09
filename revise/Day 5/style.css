@@ -376,3 +376,153 @@ button:disabled {
   background: azure;
   color: black;
 }
+
+.player-overview-card {
+  background: rgba(255, 250, 240, 0.92);
+  border: 1px solid #b8aa90;
+  border-radius: 12px;
+  padding: 10px;
+  position: relative;
+}
+
+.player-overview-card.is-current {
+  border: 2px solid #d6a640;
+  box-shadow: 0 0 0 2px rgba(214, 166, 64, 0.18);
+}
+
+.player-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.player-vp {
+  font-weight: bold;
+  font-size: 13px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid #d2c2a5;
+}
+
+.player-card-row {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.player-row-label {
+  font-size: 12px;
+  font-weight: bold;
+  color: #5f5648;
+}
+
+.mini-token-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.mini-token {
+  min-width: 28px;
+  padding: 3px 5px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.mini-token.red,
+.mini-token.green,
+.mini-token.blue,
+.mini-token.black {
+  color: white;
+}
+
+.mini-token.wild {
+  background: gold;
+  color: black;
+}
+
+.player-card-footer {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.player-card-footer span {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid #d2c2a5;
+}
+
+.current-turn-badge {
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #8a5a00;
+}
+
+.piece-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.player-piece {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+}
+
+/* Bonus = hình chữ nhật giống thẻ/production */
+/* Bonus = hình chữ nhật giống thẻ */
+.bonus-piece {
+  width: 34px;
+  height: 22px;
+  border-radius: 6px;
+}
+
+/* Chip = hình tròn giống token */
+.chip-piece {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.player-piece {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.22);
+}
+
+.player-piece.red,
+.player-piece.green,
+.player-piece.blue,
+.player-piece.black {
+  color: white;
+}
+
+.player-piece.white {
+  background: azure;
+  color: black;
+}
+
+.player-piece.wild {
+  background: gold;
+  color: black;
+}

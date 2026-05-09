@@ -1384,33 +1384,95 @@ function renderCollectedNobles(){
   .join("");
 }
 
+function createMiniTokenHTML(color, value){
+  const shortName = {
+    Red: "Red",
+    Green: "Green",
+    Blue: "Blue",
+    Black: "Black",
+    White: "White",
+    Wild: "Wild"
+  };
+
+  return `
+    <span class="mini-token ${color.toLowerCase()}">
+      ${shortName[color]}${value}
+    </span>
+  `;
+}
+
+function createPlayerPieceHTML(color, value, type){
+  return `
+    <span class="player-piece ${type}-piece ${color.toLowerCase()}">
+      <span>${color}</span>
+      <strong>${value}</strong>
+    </span>
+  `;
+}
+
+function createPlayerPieceHTML(color, value, type){
+  return `
+    <span class="player-piece ${type}-piece ${color.toLowerCase()}" title="${color}">
+      <strong>${value}</strong>
+    </span>
+  `;
+}
+
+function createPlayerPieceGroupHTML(values, colors, type){
+  return colors
+    .map(color => createPlayerPieceHTML(color, values[color] || 0, type))
+    .join("");
+}
 function renderPlayersOverview(){
   if (!playersOverviewEl) return;
 
   playersOverviewEl.innerHTML = state.players.map((player, index) => {
     const isCurrent = index === state.currentPlayerIndex;
+
     const botNumber = state.players
-    .slice(0, index + 1)
-    .filter(p => p.type === "bot").length;
+      .slice(0, index + 1)
+      .filter(p => p.type === "bot").length;
 
     const roleLabel = player.type === "bot"
       ? `Bot ${botNumber}`
       : "You";
-    const chipText = TAKE_COLORS
-      .map(color => `${color}: ${player.chips[color]}`)
-      .join(" | ");
 
-    const bonusText = BONUS_COLORS
-      .map(color => `${color}: ${player.bonusChip[color]}`)
-      .join(" | ");
+    const bonusHTML = createPlayerPieceGroupHTML(
+    player.bonusChip,
+    ["Red", "Green", "Blue", "Black", "White"],
+    "bonus"
+     );
+
+  const chipsHTML = createPlayerPieceGroupHTML(
+    player.chips,
+    ["Red", "Green", "Blue", "Black", "White", "Wild"],
+    "chip"
+    );
 
     return `
       <div class="player-overview-card ${isCurrent ? "is-current" : ""}">
-        <div><strong>${roleLabel}</strong>${isCurrent ? " (Current Turn)" : ""}</div>
-        <div>VP: ${player.victoryPoints}</div>
-        <div>Chips: ${chipText} | Wild: ${player.chips.Wild}</div>
-        <div>Bonuses: ${bonusText}</div>
-        <div>Owned: ${player.ownedCards.length} | Reserved: ${player.reservedCards.length} | Nobles: ${player.nobles.length}</div>
+        <div class="player-card-header">
+          <strong>${roleLabel}</strong>
+          <span class="player-vp">VP ${player.victoryPoints}</span>
+        </div>
+
+        <div class="player-card-row">
+          <span class="player-row-label">Chips</span>
+          <div class="piece-group chip-group">${chipsHTML}</div>
+        </div>
+
+        <div class="player-card-row">
+          <span class="player-row-label">Bonus</span>
+          <div class="piece-group bonus-group">${bonusHTML}</div>
+        </div>
+
+        <div class="player-card-footer">
+          <span>Owned ${player.ownedCards.length}</span>
+          <span>Res ${player.reservedCards.length}</span>
+          <span>Nobles ${player.nobles.length}</span>
+        </div>
+
+        ${isCurrent ? `<div class="current-turn-badge">Current Turn</div>` : ""}
       </div>
     `;
   }).join("");
