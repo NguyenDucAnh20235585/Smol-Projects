@@ -1020,7 +1020,7 @@ function render(){
   document.querySelector(`#bankRemaining${c}Chip`).textContent = state.bank[c];
   }
 
-  document.querySelector("#currentPlayerWildChip").textContent = `Wild Chip: ${player.chips.Wild}`;
+  document.querySelector("#currentPlayerWildChip").textContent = player.chips.Wild;
   document.querySelector("#bankRemainingWildChip").textContent = state.bank.Wild;
 
   const parts = [];
@@ -1090,7 +1090,7 @@ function render(){
   currentPlayerBlackBonusEl.textContent = player.bonusChip.Black;
   currentPlayerWhiteBonusEl.textContent = player.bonusChip.White;
   
-  currentPlayerLabelEl.textContent = `Player ${state.currentPlayerIndex + 1}`;
+  currentPlayerLabelEl.textContent = getPlayerDisplayName(state.currentPlayerIndex);
   currentModeLabelEl.textContent = isBotMode() ? "Vs Bot" : "Multiplayer";
 
   renderMarket();
@@ -1325,13 +1325,21 @@ function setGameMode(mode){
   resetGameForMode(mode);
 }
 
+function createColorPieceHTML(color, value, type){
+  return `
+    <span class="color-piece ${type}-piece ${color.toLowerCase()}" title="${color}">
+      <strong>${value}</strong>
+    </span>
+  `;
+}
+
 function createCardHTML(card, index, tier){
   const costHTML = Object.entries(card.cost)
-    .filter(([color, amount]) => amount > 0)
-    .map(([color, amount]) =>{
-      return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
-    })
-    .join("");
+  .filter(([color, amount]) => amount > 0)
+  .map(([color, amount]) => {
+    return createColorPieceHTML(color, amount, "chip");
+  })
+  .join("");
 
   return `
     <div class="card" data-id="${card.id}" data-tier="${tier}">
@@ -1403,15 +1411,6 @@ function createMiniTokenHTML(color, value){
 
 function createPlayerPieceHTML(color, value, type){
   return `
-    <span class="player-piece ${type}-piece ${color.toLowerCase()}">
-      <span>${color}</span>
-      <strong>${value}</strong>
-    </span>
-  `;
-}
-
-function createPlayerPieceHTML(color, value, type){
-  return `
     <span class="player-piece ${type}-piece ${color.toLowerCase()}" title="${color}">
       <strong>${value}</strong>
     </span>
@@ -1423,68 +1422,61 @@ function createPlayerPieceGroupHTML(values, colors, type){
     .map(color => createPlayerPieceHTML(color, values[color] || 0, type))
     .join("");
 }
+
 function renderPlayersOverview(){
   if (!playersOverviewEl) return;
 
-  playersOverviewEl.innerHTML = state.players.map((player, index) => {
-    const isCurrent = index === state.currentPlayerIndex;
+  playersOverviewEl.innerHTML = state.players
+    .map((player, index) => ({ player, index }))
+    .filter(({ index }) => index !== state.currentPlayerIndex)
+    .map(({ player, index }) => {
+      const roleLabel = getPlayerDisplayName(index);
 
-    const botNumber = state.players
-      .slice(0, index + 1)
-      .filter(p => p.type === "bot").length;
+      const bonusHTML = createPlayerPieceGroupHTML(
+        player.bonusChip,
+        ["Red", "Green", "Blue", "Black", "White"],
+        "bonus"
+      );
 
-    const roleLabel = player.type === "bot"
-      ? `Bot ${botNumber}`
-      : "You";
+      const chipsHTML = createPlayerPieceGroupHTML(
+        player.chips,
+        ["Red", "Green", "Blue", "Black", "White", "Wild"],
+        "chip"
+      );
 
-    const bonusHTML = createPlayerPieceGroupHTML(
-    player.bonusChip,
-    ["Red", "Green", "Blue", "Black", "White"],
-    "bonus"
-     );
+      return `
+        <div class="player-overview-card">
+          <div class="player-card-header">
+            <strong>${roleLabel}</strong>
+            <span class="player-vp">★ ${player.victoryPoints}</span>
+          </div>
 
-  const chipsHTML = createPlayerPieceGroupHTML(
-    player.chips,
-    ["Red", "Green", "Blue", "Black", "White", "Wild"],
-    "chip"
-    );
+          <div class="player-card-row">
+            <span class="player-row-label">Bonus</span>
+            <div class="piece-group bonus-group">${bonusHTML}</div>
+          </div>
 
-    return `
-      <div class="player-overview-card ${isCurrent ? "is-current" : ""}">
-        <div class="player-card-header">
-          <strong>${roleLabel}</strong>
-          <span class="player-vp">VP ${player.victoryPoints}</span>
+          <div class="player-card-row">
+            <span class="player-row-label">Chips</span>
+            <div class="piece-group chip-group">${chipsHTML}</div>
+          </div>
+
+          <div class="player-card-footer">
+            <span>Reserved ${player.reservedCards.length}</span>
+            <span>Nobles ${player.nobles.length}</span>
+          </div>
         </div>
-
-        <div class="player-card-row">
-          <span class="player-row-label">Chips</span>
-          <div class="piece-group chip-group">${chipsHTML}</div>
-        </div>
-
-        <div class="player-card-row">
-          <span class="player-row-label">Bonus</span>
-          <div class="piece-group bonus-group">${bonusHTML}</div>
-        </div>
-
-        <div class="player-card-footer">
-          <span>Owned ${player.ownedCards.length}</span>
-          <span>Res ${player.reservedCards.length}</span>
-          <span>Nobles ${player.nobles.length}</span>
-        </div>
-
-        ${isCurrent ? `<div class="current-turn-badge">Current Turn</div>` : ""}
-      </div>
-    `;
-  }).join("");
+      `;
+    }).join("");
 }
 
 function createNobleHTML(noble){
   const requirementHTML = Object.entries(noble.requiredBonuses)
-    .filter(([color, amount]) => amount > 0)
-    .map(([color, amount]) => {
-      return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
-    })
-    .join("");
+  .filter(([color, amount]) => amount > 0)
+  .map(([color, amount]) => {
+    return createColorPieceHTML(color, amount, "bonus");
+  })
+  .join("");
 
   return `
     <div class="card noble-card">

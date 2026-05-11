@@ -34,7 +34,7 @@
 
   <div id="leftSection">
   <section id="playersOverviewPanel" class="panel">
-  <h2>Players Overview</h2>
+  <h2>Other Players</h2>
   <div id="playersOverview"></div>
   </section>
   </div>
@@ -99,83 +99,107 @@
 
   <section id="currentPlayerPanel" class="panel">
 
-    <div id="turnStatus" class="panel">
-    Current turn: <span id="currentPlayerLabel">Player 1</span>
-    </div>
+  <div class="current-player-header">
+    <strong id="currentPlayerLabel">Player 1</strong>
+    <span class="player-vp">★ <span id="currentPlayerVictoryPoints">0</span></span>
+  </div>
 
-    <div class="stat-row">
-      <strong>Victory Points</strong>
-      <span id="currentPlayerVictoryPoints">0</span>
-    </div>
+  <div id="bonusChip" class="right-player-row">
+    <span class="player-row-label">Bonus</span>
 
-    <section id="ownedCardsPanel" class="panel">
-      <h2>Owned Cards</h2>
-      <div id="currentPlayerOwnedCards"></div>
-    </section>
+    <div class="piece-group bonus-group">
+      <span class="player-piece bonus-piece red" title="Red">
+        <strong id="currentPlayerRedBonus">0</strong>
+      </span>
 
-    <div class="column" id="bonusChip">
-      <div>Red bonus: <span id="currentPlayerRedBonus">0</span></div>
-      <div>Green bonus: <span id="currentPlayerGreenBonus">0</span></div>
-      <div>Blue bonus: <span id="currentPlayerBlueBonus">0</span></div>
-      <div>Black bonus: <span id="currentPlayerBlackBonus">0</span></div>
-      <div>White bonus: <span id="currentPlayerWhiteBonus">0</span></div>
-    </div>
+      <span class="player-piece bonus-piece green" title="Green">
+        <strong id="currentPlayerGreenBonus">0</strong>
+      </span>
 
-    <div class="row player-chip-row">
-      <span class="player-chip-label-red">Red</span>
-      <span id="currentPlayerRedChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Red">Take</button>
-    </div>
+      <span class="player-piece bonus-piece blue" title="Blue">
+        <strong id="currentPlayerBlueBonus">0</strong>
+      </span>
 
-    <div class="row player-chip-row">
-      <span class="player-chip-label-green">Green</span>
-      <span id="currentPlayerGreenChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Green">Take</button>
-    </div>
+      <span class="player-piece bonus-piece black" title="Black">
+        <strong id="currentPlayerBlackBonus">0</strong>
+      </span>
 
-    <div class="row player-chip-row">
-      <span class="player-chip-label-blue">Blue</span>
-      <span id="currentPlayerBlueChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Blue">Take</button>
+      <span class="player-piece bonus-piece white" title="White">
+        <strong id="currentPlayerWhiteBonus">0</strong>
+      </span>
     </div>
+  </div>
 
-    <div class="row player-chip-row">
-      <span class="player-chip-label-black">Black</span>
-      <span id="currentPlayerBlackChip">0</span>
-      <button class="chipButton" data-action="add" data-color="Black">Take</button>
-    </div>
+  <div class="right-player-row">
+    <span class="player-row-label">Chips</span>
 
-    <div class="row player-chip-row">
-      <span class="player-chip-label-white">White</span>
-      <span id="currentPlayerWhiteChip">0</span>
-      <button class="chipButton" data-action="add" data-color="White">Take</button>
-    </div>
+    <div class="piece-group chip-group">
+      <button class="chipButton chip-piece-button" data-action="add" data-color="Red" title="Take Red">
+        <span class="player-piece chip-piece red">
+          <strong id="currentPlayerRedChip">0</strong>
+        </span>
+      </button>
 
-    <div class="row">
-      <span id="currentPlayerWildChip">Wild: 0</span>
+      <button class="chipButton chip-piece-button" data-action="add" data-color="Green" title="Take Green">
+        <span class="player-piece chip-piece green">
+          <strong id="currentPlayerGreenChip">0</strong>
+        </span>
+      </button>
+
+      <button class="chipButton chip-piece-button" data-action="add" data-color="Blue" title="Take Blue">
+        <span class="player-piece chip-piece blue">
+          <strong id="currentPlayerBlueChip">0</strong>
+        </span>
+      </button>
+
+      <button class="chipButton chip-piece-button" data-action="add" data-color="Black" title="Take Black">
+        <span class="player-piece chip-piece black">
+          <strong id="currentPlayerBlackChip">0</strong>
+        </span>
+      </button>
+
+      <button class="chipButton chip-piece-button" data-action="add" data-color="White" title="Take White">
+        <span class="player-piece chip-piece white">
+          <strong id="currentPlayerWhiteChip">0</strong>
+        </span>
+      </button>
+
+      <span class="player-piece chip-piece wild" title="Wild">
+        <strong id="currentPlayerWildChip">0</strong>
+      </span>
     </div>
+  </div>
+
+  <section id="ownedCardsPanel" class="panel">
+    <h2>Owned Cards</h2>
+    <div id="currentPlayerOwnedCards"></div>
   </section>
 
-    <div id="takePanel" class="panel action-panel">
-      <h2>Take Action</h2>
-    <div>Selected: <span id="selectedText">none</span></div>
-    <div class="action-buttons">
-      <button id="confirmTake">Confirm Take</button>
-      <button id="clearTake">Clear</button>
-    </div>
-    <div id="takeError"></div>
-  </div>
+  </section>
 
-  <div id="reservePanel" class="panel action-panel">
-    <h2>Reserve Action</h2>
-    <div class="action-buttons">
-      <button id="reserveModeButton">Reserve Card</button>
-      <button id="confirmReserve">Confirm Reserve</button>
-      <button id="cancelAction">Cancel</button>
-      <button id="debugEndGame">Debug End Game</button>
+    <div id="actionPanel" class="panel action-panel">
+      <h2>Actions</h2>
+
+      <div class="action-buttons">
+        <button id="confirmTake">Take Chips</button>
+        <button id="buyModeButton">Buy Card</button>
+        <button id="reserveModeButton">Reserve Card</button>
+        <button id="cancelAction">Cancel</button>
+        <button id="clearTake" hidden>Clear</button>
+        <button id="confirmReserve" hidden>Confirm Reserve</button>
+        <button id="debugEndGame" hidden>Debug End Game</button>
+      </div>
+
+      <div class="selected-line">
+        Selected chips: <span id="selectedText">none</span>
+      </div>
+
+      <div class="selected-line">
+        Selected card: <span id="selectedReserveText">none</span>
+      </div>
+
+      <div id="takeError"></div>
     </div>
-    <div>Selected reserve card: <span id="selectedReserveText">none</span></div>
-  </div>
 
   <section id="ReservedCardsPanel" class="panel">
     <h2>Reserved Cards</h2>
