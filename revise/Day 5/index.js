@@ -31,6 +31,7 @@ const state = {
   currentAction: "take",
   screen: "setup",
   selectedReserveIndex: null,
+  selectedBuyIndex: null,
   gameEnding: false,
   endGameTriggeredBy: null,
   gameOver: false
@@ -1012,6 +1013,37 @@ function createBank(playerCount){
   };
 }
 
+function renderActionStatus(){
+  const actionModeTextEl = document.querySelector("#actionModeText");
+  const actionHintTextEl = document.querySelector("#actionHintText");
+
+  if (!actionModeTextEl || !actionHintTextEl) return;
+
+  if (state.currentAction === "take"){
+    actionModeTextEl.textContent = "Take Chips";
+    actionHintTextEl.textContent = "Pick chips from Bank, then press Take Chips.";
+    return;
+  }
+
+  if (state.currentAction === "reserve"){
+  actionModeTextEl.textContent = "Reserve Card";
+
+  if (state.selectedReserveIndex === null) {
+    actionHintTextEl.textContent = "Click a market card to choose it, then press Reserve Card again.";
+  } else {
+    actionHintTextEl.textContent = "Press Reserve Card to confirm, or Cancel to choose again.";
+  }
+
+  return;
+}
+
+  if (state.currentAction === "buy"){
+    actionModeTextEl.textContent = "Buy Card";
+    actionHintTextEl.textContent = "Click an affordable card to buy it.";
+    return;
+  }
+}
+
 function render(){
   const player = getCurrentPlayer();
 
@@ -1074,13 +1106,21 @@ function render(){
     : "none";
   }
 
-  confirmReserveButton.disabled =
-    state.currentAction !== "reserve" ||
-    state.selectedReserveIndex === null ||
-    player.reservedCards.length >= 3;
+confirmReserveButton.disabled =
+  state.currentAction !== "reserve" ||
+  state.selectedReserveIndex === null ||
+  player.reservedCards.length >= 3;
 
-    cancelActionButton.disabled = (state.currentAction === "take");
-    reserveModeButton.disabled = (state.currentAction === "reserve");
+const hasSelectedChips = selectedTotalChip > 0;
+const hasSelectedReserveCard = state.selectedReserveIndex !== null;
+const isNotDefaultAction = state.currentAction !== "take";
+
+cancelActionButton.disabled =
+  !hasSelectedChips &&
+  !hasSelectedReserveCard &&
+  !isNotDefaultAction;
+
+reserveModeButton.disabled = false;
 
   currentPlayerVictoryPointsEl.textContent = player.victoryPoints;
 
@@ -1099,6 +1139,7 @@ function render(){
   renderNobles();
   renderCollectedNobles();
   renderPlayersOverview();
+  renderActionStatus();
 
   if (state.gameOver){
   confirmButton.disabled = true;
@@ -1187,6 +1228,7 @@ function endTurn(){
   }
 
   clearSelectionOnly();
+  state.selectedBuyIndex = null;
   state.selectedReserveIndex = null;
   state.currentAction = "take";
 
@@ -1258,6 +1300,24 @@ function clearSelection(){
   render();
 }
 
+function trySelectChip(color){
+  if (state.gameOver) return;
+  if (isBotTurn()) return;
+  if (state.currentAction !== "take") return;
+  if (!TAKE_COLORS.includes(color)) return;
+
+  if ((state.bank[color] - selected[color]) <= 0) return;
+
+  selected[color] += 1;
+
+  if (!isValidTakeSelection()){
+    selected[color] -= 1;
+    return;
+  }
+
+  render();
+}
+
 currentPlayerSection.addEventListener("click", (e) =>{
   if (state.gameOver) return;
   if (isBotTurn()) return;
@@ -1271,16 +1331,7 @@ currentPlayerSection.addEventListener("click", (e) =>{
   const color = btn.dataset.color;
 
   if (action === "add"){
-  if ((state.bank[color] - selected[color]) <= 0) return;
-
-  // thử chọn thêm 1 rồi check xem imply logic rule splendor correct ch
-  selected[color] += 1;
-  if (!isValidTakeSelection()){
-    selected[color] -= 1;
-    return;
-  }
-
-  render();
+  trySelectChip(color);
 }
 
 if (action === "remove"){
@@ -1292,6 +1343,16 @@ if (action === "remove"){
 }
 });
 
+const bankChipsEl = document.querySelector("#bankChips");
+
+bankChipsEl.addEventListener("click", (e) => {
+  const chipEl = e.target.closest(".bank-chip");
+  if (!chipEl) return;
+
+  const color = chipEl.dataset.color;
+  trySelectChip(color);
+});
+
 // mode changes
 function resetGameForMode(mode){
   state.players = createPlayers(state.playerCount);
@@ -1299,6 +1360,7 @@ function resetGameForMode(mode){
   state.gameMode = mode;
   state.bank = createBank(state.playerCount);
   state.currentAction = "take";
+  state.selectedBuyIndex = null;
   state.selectedReserveIndex = null;
   state.gameEnding = false;
   state.endGameTriggeredBy = null;
@@ -1501,36 +1563,22 @@ const marketTier1El = document.querySelector("#marketTier1");
 const reservedCardsEl = document.querySelector("#currentPlayerReservedCards");
 
 //important
-marketAreaEl.addEventListener("click", (e) =>{
+function buyMarketCardById(cardId, tier){
   if (state.gameOver) return;
   if (isBotTurn()) return;
 
-  const cardEl = e.target.closest(".card");
-  if (!cardEl) return;
-
-  if (state.currentAction === "reserve"){
-    const cardId = cardEl.dataset.id;
-    const tier = Number(cardEl.dataset.tier);
-    state.selectedReserveIndex = { cardId, tier };
-    render();
-    return;
-}
-
-  const btn = e.target.closest(".buyCardButton");
-  if (!btn) return;
-
-  const cardId = btn.dataset.id;
-  const tier = Number(btn.dataset.tier);
   const card = marketBoard[tier].find(card => card.id === cardId);
+  if (!card) return;
 
   if (!canAffordCard(card)){
-    setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this card.`);
+    setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} does not have enough chips to buy this card.`);
     return;
-}
+  }
 
   const player = getCurrentPlayer();
-  const currentPlayerNumber = state.currentPlayerIndex + 1;
-  const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
+  const currentPlayerName = getPlayerDisplayName(state.currentPlayerIndex);
+  const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  const nextPlayerName = getPlayerDisplayName(nextPlayerIndex);
 
   payForCard(card);
   applyCardReward(card);
@@ -1548,13 +1596,42 @@ marketAreaEl.addEventListener("click", (e) =>{
   const claimedNoble = claimAvailableNoble(player);
 
   if (claimedNoble){
-    setLog(`Player ${currentPlayerNumber} bought a ${card.color} card (${card.points} VP), claimed ${claimedNoble.id}, and it is now Player ${nextPlayerNumber}'s turn.`);
-  } 
-  else {
-    setLog(`Player ${currentPlayerNumber} bought a ${card.color} card (${card.points} VP). Player ${nextPlayerNumber}'s turn.`);
+    setLog(`${currentPlayerName} bought a ${card.color} card (${card.points} VP), claimed ${claimedNoble.id}. ${nextPlayerName}'s turn.`);
+  } else {
+    setLog(`${currentPlayerName} bought a ${card.color} card (${card.points} VP). ${nextPlayerName}'s turn.`);
   }
 
   endTurn();
+}
+
+marketAreaEl.addEventListener("click", (e) =>{
+  if (state.gameOver) return;
+  if (isBotTurn()) return;
+
+  const cardEl = e.target.closest(".card");
+  if (!cardEl) return;
+
+  const cardId = cardEl.dataset.id;
+  const tier = Number(cardEl.dataset.tier);
+
+  if (state.currentAction === "reserve"){
+    state.selectedReserveIndex = { cardId, tier };
+    state.selectedBuyIndex = null;
+    render();
+    return;
+  }
+
+  if (state.currentAction === "buy"){
+    state.selectedBuyIndex = { cardId, tier };
+    state.selectedReserveIndex = null;
+    render();
+    return;
+  }
+
+  const btn = e.target.closest(".buyCardButton");
+  if (!btn) return;
+
+  buyMarketCardById(cardId, tier);
 });
 
 reservedCardsEl.addEventListener("click", (e) =>{
@@ -1843,6 +1920,45 @@ function enterReserveMode(){
   render();
 }
 
+function reserveCardById(cardId, tier){
+  if (state.gameOver) return;
+  if (isBotTurn()) return;
+
+  const player = getCurrentPlayer();
+
+  if (state.currentAction !== "reserve") return;
+  if (player.reservedCards.length >= 3) {
+    setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} cannot reserve more than 3 cards.`);
+    return;
+  }
+
+  const card = marketBoard[tier].find(card => card.id === cardId);
+  if (!card) return;
+
+  player.reservedCards.push(card);
+
+  const cardIndex = marketBoard[tier].findIndex(card => card.id === cardId);
+  if (cardIndex === -1) return;
+
+  marketBoard[tier].splice(cardIndex, 1);
+
+  const replacement = drawCardFromTier(tier);
+  if (replacement) marketBoard[tier].push(replacement);
+
+  if (state.bank.Wild > 0 && totalChip(player.chips) < 10){
+    player.chips.Wild += 1;
+    state.bank.Wild -= 1;
+  }
+
+  const currentPlayerName = getPlayerDisplayName(state.currentPlayerIndex);
+  const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  const nextPlayerName = getPlayerDisplayName(nextPlayerIndex);
+
+  setLog(`${currentPlayerName} reserved a ${card.color} level ${card.tier} card. ${nextPlayerName}'s turn.`);
+
+  endTurn();
+}
+
 function confirmReserveCard(){
   if (state.gameOver) return;
   if (isBotTurn()) return;
@@ -1886,14 +2002,14 @@ function renderReservedCards(){
   reservedEl.innerHTML = player.reservedCards
     .map((card, index) =>{
       const costHTML = Object.entries(card.cost)
-        .filter(([color, amount]) => amount > 0)
-        .map(([color, amount]) => {
-          return `<div class="cost ${color.toLowerCase()}">${color}: ${amount}</div>`;
-        })
-        .join("");
+      .filter(([color, amount]) => amount > 0)
+      .map(([color, amount]) => {
+        return createColorPieceHTML(color, amount, "chip");
+      })
+      .join("");
 
       return `
-        <div class="card">
+        <div class="card reserved-card">
           <div class="card-top">
             <span class="card-points">${card.points}</span>
             <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
@@ -1931,14 +2047,25 @@ function cancelAction(){
 
   state.currentAction = "take";
   state.selectedReserveIndex = null;
+  state.selectedBuyIndex = null;
   clearSelectionOnly();
-  setLog(`Player ${state.currentPlayerIndex + 1} cancelled the current action.`);
+
+  setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} cancelled the current action.`);
   render();
 }
 
 confirmButton.addEventListener("click", confirmTake);
 clearButton.addEventListener("click", clearSelection);
-reserveModeButton.addEventListener("click", enterReserveMode);
+
+reserveModeButton.addEventListener("click", () => {
+  if (state.currentAction === "reserve" && state.selectedReserveIndex !== null) {
+    confirmReserveCard();
+    return;
+  }
+
+  enterReserveMode();
+});
+
 confirmReserveButton.addEventListener("click", confirmReserveCard);
 cancelActionButton.addEventListener("click", cancelAction);
 

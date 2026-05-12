@@ -45,27 +45,27 @@
     <h2>Bank</h2>
 
     <div id="bankChips">
-      <div class="bank-chip red">
+      <div class="bank-chip red" data-color="Red">
         <span class="bank-chip-label">Red</span>
         <span id="bankRemainingRedChip">7</span>
       </div>
 
-      <div class="bank-chip green">
+      <div class="bank-chip green" data-color="Green">
         <span class="bank-chip-label">Green</span>
         <span id="bankRemainingGreenChip">7</span>
       </div>
 
-      <div class="bank-chip blue">
+      <div class="bank-chip blue" data-color="Blue">
         <span class="bank-chip-label">Blue</span>
         <span id="bankRemainingBlueChip">7</span>
       </div>
 
-      <div class="bank-chip black">
+      <div class="bank-chip black" data-color="Black">
         <span class="bank-chip-label">Black</span>
         <span id="bankRemainingBlackChip">7</span>
       </div>
 
-      <div class="bank-chip white">
+      <div class="bank-chip white" data-color="White">
         <span class="bank-chip-label">White</span>
         <span id="bankRemainingWhiteChip">7</span>
       </div>
@@ -190,12 +190,24 @@
         <button id="debugEndGame" hidden>Debug End Game</button>
       </div>
 
-      <div class="selected-line">
-        Selected chips: <span id="selectedText">none</span>
+      <div id="actionStatus" class="action-status">
+      <div>
+        <strong>Mode:</strong>
+        <span id="actionModeText">Take Chips</span>
       </div>
 
-      <div class="selected-line">
-        Selected card: <span id="selectedReserveText">none</span>
+      <div>
+        <strong>Selected:</strong>
+        <span id="selectedText">none</span>
+      </div>
+
+      <div id="actionHintText" class="action-hint">
+        Pick chips from Bank, then press Take Chips.
+      </div>
+
+      <div>
+        <strong>Selected card:</strong>
+        <span id="selectedReserveText">none</span>
       </div>
 
       <div id="takeError"></div>

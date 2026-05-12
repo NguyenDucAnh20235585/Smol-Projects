@@ -453,3 +453,59 @@ button:disabled {
   font-size: 13px;
   color: #5f5648;
 }
+
+.action-status {
+  padding: 8px;
+  border: 1px solid #d2c2a5;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.action-status strong {
+  color: #5f5648;
+}
+
+#actionModeText {
+  font-weight: bold;
+  color: #8a5a00;
+}
+
+.action-hint {
+  color: #6f6759;
+  font-size: 12px;
+}
+
+.bank-chip {
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.bank-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.bank-chip.wild {
+  cursor: default;
+}
+
+#currentPlayerReservedCards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reserved-card {
+  min-height: 100px;
+}
+
+.buyReservedCardButton {
+  margin-top: 4px;
+  padding: 3px 7px;
+  font-size: 12px;
+}
