@@ -32,6 +32,8 @@ const state = {
   screen: "setup",
   selectedReserveIndex: null,
   selectedBuyIndex: null,
+  selectedReservedCardIndex: null,
+  selectedDeckTier: null,
   gameEnding: false,
   endGameTriggeredBy: null,
   gameOver: false
@@ -917,6 +919,8 @@ const playersOverviewEl = document.querySelector("#playersOverview");
 const confirmButton = document.querySelector("#confirmTake");
 const clearButton = document.querySelector("#clearTake");
 
+const buyModeButton = document.querySelector("#buyModeButton");
+
 const reserveModeButton = document.querySelector("#reserveModeButton");
 const confirmReserveButton = document.querySelector("#confirmReserve");
 const cancelActionButton = document.querySelector("#cancelAction");
@@ -1028,24 +1032,31 @@ function renderActionStatus(){
   if (state.currentAction === "reserve"){
   actionModeTextEl.textContent = "Reserve Card";
 
-  if (state.selectedReserveIndex === null) {
-    actionHintTextEl.textContent = "Click a market card to choose it, then press Reserve Card again.";
+  if (state.selectedReserveIndex === null && state.selectedDeckTier === null) {
+    actionHintTextEl.textContent = "Click a market card or deck stack, then press Reserve Card again.";
   } else {
-    actionHintTextEl.textContent = "Press Reserve Card to confirm, or Cancel to choose again.";
+    actionHintTextEl.textContent = "Selection is highlighted. Press Reserve Card to confirm, or Cancel.";
   }
 
   return;
 }
 
   if (state.currentAction === "buy"){
-    actionModeTextEl.textContent = "Buy Card";
-    actionHintTextEl.textContent = "Click an affordable card to buy it.";
-    return;
+  actionModeTextEl.textContent = "Buy Card";
+
+  if (state.selectedBuyIndex === null && state.selectedReservedCardIndex === null){
+    actionHintTextEl.textContent = "Click a market card or reserved card, then press Buy Card again.";
+  } else {
+    actionHintTextEl.textContent = "Selected card is highlighted. Press Buy Card to confirm, or Cancel.";
   }
+
+  return;
+}
 }
 
 function render(){
-  const player = getCurrentPlayer();
+  const currentTurnPlayer = getCurrentPlayer();
+  const player = state.players[state.humanPlayerIndex];
 
   for (const c of TAKE_COLORS){
   document.querySelector(`#currentPlayer${c}Chip`).textContent = player.chips[c];
@@ -1106,21 +1117,27 @@ function render(){
     : "none";
   }
 
-confirmReserveButton.disabled =
-  state.currentAction !== "reserve" ||
-  state.selectedReserveIndex === null ||
-  player.reservedCards.length >= 3;
+  confirmReserveButton.disabled =
+    state.currentAction !== "reserve" ||
+    state.selectedReserveIndex === null ||
+    player.reservedCards.length >= 3;
 
-const hasSelectedChips = selectedTotalChip > 0;
-const hasSelectedReserveCard = state.selectedReserveIndex !== null;
-const isNotDefaultAction = state.currentAction !== "take";
+  const hasSelectedChips = selectedTotalChip > 0;
+  const hasSelectedReserveCard = state.selectedReserveIndex !== null;
+  const hasSelectedBuyCard = state.selectedBuyIndex !== null;
+  const isNotDefaultAction = state.currentAction !== "take";
+  const hasSelectedReservedCard = state.selectedReservedCardIndex !== null;
+  const hasSelectedDeck = state.selectedDeckTier !== null;
 
-cancelActionButton.disabled =
-  !hasSelectedChips &&
-  !hasSelectedReserveCard &&
-  !isNotDefaultAction;
+  cancelActionButton.disabled =
+    !hasSelectedChips &&
+    !hasSelectedReserveCard &&
+    !hasSelectedBuyCard &&
+    !hasSelectedReservedCard &&
+    !hasSelectedDeck &&
+    !isNotDefaultAction;
 
-reserveModeButton.disabled = false;
+  reserveModeButton.disabled = false;
 
   currentPlayerVictoryPointsEl.textContent = player.victoryPoints;
 
@@ -1130,14 +1147,22 @@ reserveModeButton.disabled = false;
   currentPlayerBlackBonusEl.textContent = player.bonusChip.Black;
   currentPlayerWhiteBonusEl.textContent = player.bonusChip.White;
   
-  currentPlayerLabelEl.textContent = getPlayerDisplayName(state.currentPlayerIndex);
+  currentPlayerLabelEl.textContent = getPlayerDisplayName(state.humanPlayerIndex);
   currentModeLabelEl.textContent = isBotMode() ? "Vs Bot" : "Multiplayer";
 
+  document.querySelectorAll(".deck-stack").forEach(deckEl => {
+    const tier = Number(deckEl.dataset.tier);
+
+    deckEl.classList.toggle(
+      "is-selected-deck",
+      state.currentAction === "reserve" && state.selectedDeckTier === tier
+    );
+  });
+
   renderMarket();
-  renderOwnedCards();
+  // renderOwnedCards();
   renderReservedCards();
   renderNobles();
-  renderCollectedNobles();
   renderPlayersOverview();
   renderActionStatus();
 
@@ -1230,6 +1255,8 @@ function endTurn(){
   clearSelectionOnly();
   state.selectedBuyIndex = null;
   state.selectedReserveIndex = null;
+  state.selectedReservedCardIndex = null;
+  state.selectedDeckTier = null;
   state.currentAction = "take";
 
   const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
@@ -1240,7 +1267,7 @@ function endTurn(){
   }
 
   state.currentPlayerIndex = nextPlayerIndex;
-render();
+  render();
 
 if (isBotTurn() && !state.gameOver){
   setTimeout(() => {
@@ -1362,6 +1389,8 @@ function resetGameForMode(mode){
   state.currentAction = "take";
   state.selectedBuyIndex = null;
   state.selectedReserveIndex = null;
+  state.selectedReservedCardIndex = null;
+  state.selectedDeckTier = null;
   state.gameEnding = false;
   state.endGameTriggeredBy = null;
   state.gameOver = false;
@@ -1403,8 +1432,22 @@ function createCardHTML(card, index, tier){
   })
   .join("");
 
+  const isSelectedReserve =
+  state.currentAction === "reserve" &&
+  state.selectedReserveIndex &&
+  state.selectedReserveIndex.cardId === card.id &&
+  state.selectedReserveIndex.tier === tier;
+
+  const isSelectedBuy =
+    state.currentAction === "buy" &&
+    state.selectedBuyIndex &&
+    state.selectedBuyIndex.cardId === card.id &&
+    state.selectedBuyIndex.tier === tier;
+
+  const selectedClass = isSelectedReserve || isSelectedBuy ? "is-selected-card" : "";
+
   return `
-    <div class="card" data-id="${card.id}" data-tier="${tier}">
+    <div class="card ${selectedClass}" data-id="${card.id}" data-tier="${tier}">
       <div class="card-top">
         <span class="card-points">${card.points}</span>
         <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
@@ -1413,10 +1456,24 @@ function createCardHTML(card, index, tier){
         <div>Level ${card.tier}</div>
       </div>
       <div class="card-costs">
-        ${costHTML}
+        ${costHTML}    
       </div>
-      <button class="buyCardButton" data-id="${card.id}" data-tier="${tier}">Buy</button>
     </div>
+  `;
+}
+
+function createDeckStackHTML(tier){
+  const selectedClass =
+    state.currentAction === "reserve" &&
+    state.selectedDeckTier === tier
+      ? "is-selected-deck"
+      : "";
+
+  return `
+    <button class="deck-stack ${selectedClass}" data-tier="${tier}">
+      <strong>L${tier}</strong>
+      <span>${marketDecks[tier].length}</span>
+    </button>
   `;
 }
 
@@ -1425,34 +1482,34 @@ function renderNobles(){
   noblesEl.innerHTML = nobles.map(createNobleHTML).join("");
 }
 
-function renderCollectedNobles(){
-  const player = getCurrentPlayer();
-  const collectedNoblesEl = document.querySelector("#currentPlayerCollectedNobles");
+// function renderCollectedNobles(){
+//   const player = state.players[state.humanPlayerIndex];
+//   const collectedNoblesEl = document.querySelector("#currentPlayerCollectedNobles");
 
-  if (!collectedNoblesEl) return;
+//   if (!collectedNoblesEl) return;
 
-  if (player.nobles.length === 0){
-    collectedNoblesEl.innerHTML = `<div class="emptyText">No nobles yet</div>`;
-    return;
-  }
+//   if (player.nobles.length === 0){
+//     collectedNoblesEl.innerHTML = `<div class="emptyText">No nobles yet</div>`;
+//     return;
+//   }
 
-  collectedNoblesEl.innerHTML = player.nobles
-  .map(noble => {
-    const reqText = Object.entries(noble.requiredBonuses)
-      .filter(([_, amount]) => amount > 0)
-      .map(([color, amount]) => `${color}: ${amount}`)
-      .join(" | ");
+//   collectedNoblesEl.innerHTML = player.nobles
+//   .map(noble => {
+//     const reqText = Object.entries(noble.requiredBonuses)
+//       .filter(([_, amount]) => amount > 0)
+//       .map(([color, amount]) => `${color}: ${amount}`)
+//       .join(" | ");
 
-    return `
-      <div class="mini-noble">
-        <div class="mini-noble-title">${noble.id}</div>
-        <div class="mini-noble-points">${noble.points} VP</div>
-        <div class="mini-noble-req">${reqText}</div>
-      </div>
-    `;
-  })
-  .join("");
-}
+//     return `
+//       <div class="mini-noble">
+//         <div class="mini-noble-title">${noble.id}</div>
+//         <div class="mini-noble-points">${noble.points} VP</div>
+//         <div class="mini-noble-req">${reqText}</div>
+//       </div>
+//     `;
+//   })
+//   .join("");
+// }
 
 function createMiniTokenHTML(color, value){
   const shortName = {
@@ -1608,6 +1665,26 @@ marketAreaEl.addEventListener("click", (e) =>{
   if (state.gameOver) return;
   if (isBotTurn()) return;
 
+  const deckEl = e.target.closest(".deck-stack");
+
+  if (deckEl){
+    if (state.currentAction !== "reserve") return;
+
+    const tier = Number(deckEl.dataset.tier);
+
+    if (marketDecks[tier].length <= 0){
+      setLog(`No cards left in Tier ${tier} deck.`);
+      return;
+    }
+
+    state.selectedDeckTier = tier;
+    state.selectedReserveIndex = null;
+    state.selectedBuyIndex = null;
+
+    render();
+    return;
+  }
+
   const cardEl = e.target.closest(".card");
   if (!cardEl) return;
 
@@ -1616,6 +1693,7 @@ marketAreaEl.addEventListener("click", (e) =>{
 
   if (state.currentAction === "reserve"){
     state.selectedReserveIndex = { cardId, tier };
+    state.selectedDeckTier = null;
     state.selectedBuyIndex = null;
     render();
     return;
@@ -1624,32 +1702,23 @@ marketAreaEl.addEventListener("click", (e) =>{
   if (state.currentAction === "buy"){
     state.selectedBuyIndex = { cardId, tier };
     state.selectedReserveIndex = null;
+    state.selectedDeckTier = null;
     render();
     return;
   }
-
-  const btn = e.target.closest(".buyCardButton");
-  if (!btn) return;
-
-  buyMarketCardById(cardId, tier);
 });
 
-reservedCardsEl.addEventListener("click", (e) =>{
+function buyReservedCardByIndex(index){
   if (state.gameOver) return;
   if (isBotTurn()) return;
 
-  const btn = e.target.closest(".buyReservedCardButton");
-  if (!btn) return;
-
-  if (state.currentAction !== "take") return;
-
-  const index = Number(btn.dataset.index);
   const player = getCurrentPlayer();
   const card = player.reservedCards[index];
+
   if (!card) return;
 
   if (!canAffordCard(card)){
-    setLog(`Player ${state.currentPlayerIndex + 1} does not have enough chips to buy this reserved card.`);
+    setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} does not have enough chips to buy this reserved card.`);
     return;
   }
 
@@ -1661,16 +1730,61 @@ reservedCardsEl.addEventListener("click", (e) =>{
 
   const claimedNoble = claimAvailableNoble(player);
 
-  const currentPlayerNumber = state.currentPlayerIndex + 1;
-  const nextPlayerNumber = ((state.currentPlayerIndex + 1) % state.players.length) + 1;
+  const currentPlayerName = getPlayerDisplayName(state.currentPlayerIndex);
+  const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  const nextPlayerName = getPlayerDisplayName(nextPlayerIndex);
 
   if (claimedNoble){
-    setLog(`Player ${currentPlayerNumber} bought a reserved ${card.color} card (${card.points} VP), claimed ${claimedNoble.id}, and it is now Player ${nextPlayerNumber}'s turn.`);
+    setLog(`${currentPlayerName} bought a reserved ${card.color} card (${card.points} VP), claimed ${claimedNoble.id}. ${nextPlayerName}'s turn.`);
   } else {
-    setLog(`Player ${currentPlayerNumber} bought a reserved ${card.color} card (${card.points} VP). Player ${nextPlayerNumber}'s turn.`);
+    setLog(`${currentPlayerName} bought a reserved ${card.color} card (${card.points} VP). ${nextPlayerName}'s turn.`);
   }
 
   endTurn();
+}
+
+reservedCardsEl.addEventListener("click", (e) =>{
+  if (state.gameOver) return;
+  if (isBotTurn()) return;
+  if (state.currentAction !== "buy") return;
+
+  const cardEl = e.target.closest(".reserved-card");
+  if (!cardEl) return;
+
+  const index = Number(cardEl.dataset.index);
+
+  state.selectedReservedCardIndex = index;
+  state.selectedBuyIndex = null;
+  state.selectedReserveIndex = null;
+  state.selectedDeckTier = null;
+
+  render();
+});
+
+buyModeButton.addEventListener("click", () => {
+  if (state.gameOver) return;
+  if (isBotTurn()) return;
+
+  if (state.currentAction === "buy" && state.selectedBuyIndex !== null){
+    const { cardId, tier } = state.selectedBuyIndex;
+    buyMarketCardById(cardId, tier);
+    return;
+  }
+
+  if (state.currentAction === "buy" && state.selectedReservedCardIndex !== null){
+    buyReservedCardByIndex(state.selectedReservedCardIndex);
+    return;
+  }
+
+  state.currentAction = "buy";
+  state.selectedBuyIndex = null;
+  state.selectedReservedCardIndex = null;
+  state.selectedReserveIndex = null;
+  state.selectedDeckTier = null;
+  clearSelectionOnly();
+
+  setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} is choosing a card to buy.`);
+  render();
 });
 
 function canAffordCard(card){
@@ -1772,6 +1886,11 @@ function getNeededColorsForCard(player, card){
 
 function botTakeChips(){
   const player = getCurrentPlayer();
+
+  if (totalChip(player.chips) >= 10){
+    return false;
+  }
+
   const targetCard = chooseTargetCardForBot();
 
   let colorsToTake = [];
@@ -1781,7 +1900,9 @@ function botTakeChips(){
   }
 
   if (colorsToTake.length === 0){
-    colorsToTake = TAKE_COLORS.filter(color => state.bank[color] > 0).slice(0, 3);
+    colorsToTake = TAKE_COLORS
+      .filter(color => state.bank[color] > 0)
+      .slice(0, 3);
   }
 
   for (const color of TAKE_COLORS){
@@ -1792,22 +1913,38 @@ function botTakeChips(){
     selected[color] = 1;
   }
 
-  if (!isValidTakeSelection() || totalChip(player.chips) + totalChip(selected) > 10){
+  if (
+    !isValidTakeSelection() ||
+    totalChip(player.chips) + totalChip(selected) > 10
+  ){
     for (const color of TAKE_COLORS){
       selected[color] = 0;
     }
 
-    const fallbackColors = TAKE_COLORS.filter(color => state.bank[color] > 0).slice(0, 3);
+    const fallbackColors = TAKE_COLORS
+      .filter(color => state.bank[color] > 0)
+      .slice(0, Math.min(3, 10 - totalChip(player.chips)));
+
     for (const color of fallbackColors){
       selected[color] = 1;
     }
   }
 
-  const takenParts = TAKE_COLORS
-  .filter(c => selected[c] > 0)
-  .map(c => `${c} x${selected[c]}`);
+  if (
+    !isValidTakeSelection() ||
+    totalChip(selected) === 0 ||
+    totalChip(player.chips) + totalChip(selected) > 10
+  ){
+    for (const color of TAKE_COLORS){
+      selected[color] = 0;
+    }
 
-  if (takenParts.length === 0) return;
+    return false;
+  }
+
+  const takenParts = TAKE_COLORS
+    .filter(c => selected[c] > 0)
+    .map(c => `${c} x${selected[c]}`);
 
   applyTakeSelection();
 
@@ -1815,6 +1952,7 @@ function botTakeChips(){
   setLog(`${botName} took ${takenParts.join(", ")}.`);
 
   endTurn();
+  return true;
 }
 
 function botBuyCard(){
@@ -1861,7 +1999,13 @@ function runBotTurn(){
   const bought = botBuyCard();
   if (bought) return;
 
-  botTakeChips();
+  const tookChips = botTakeChips();
+  if (tookChips) return;
+
+  const botName = getPlayerDisplayName(state.currentPlayerIndex);
+  setLog(`${botName} has no valid action and skips this turn.`);
+
+  endTurn();
 }
 
 function applyCardReward(card){
@@ -1890,7 +2034,7 @@ function claimAvailableNoble(player){
 
 // reserve card, as well as putting index for easier find
 function renderOwnedCards(){
-  const player = getCurrentPlayer();
+  const player = state.players[state.humanPlayerIndex];
   const ownedEl = document.querySelector("#currentPlayerOwnedCards");
 
   ownedEl.innerHTML = player.ownedCards
@@ -1966,37 +2110,69 @@ function confirmReserveCard(){
   const player = getCurrentPlayer();
 
   if (state.currentAction !== "reserve") return;
-  if (state.selectedReserveIndex === null) return;
-  if (player.reservedCards.length >= 3) return;
 
-  // fix save card logic
+  if (state.selectedReserveIndex === null && state.selectedDeckTier === null){
+    return;
+  }
 
-  const { cardId, tier } = state.selectedReserveIndex;
-  const card = marketBoard[tier].find(card => card.id === cardId);
-  if (!card) return;
+  if (player.reservedCards.length >= 3){
+    setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} cannot reserve more than 3 cards.`);
+    return;
+  }
+
+  let card = null;
+  let tier = null;
+  let reservedFromDeck = false;
+
+  if (state.selectedReserveIndex !== null){
+    const { cardId } = state.selectedReserveIndex;
+    tier = state.selectedReserveIndex.tier;
+
+    card = marketBoard[tier].find(card => card.id === cardId);
+    if (!card) return;
+
+    const cardIndex = marketBoard[tier].findIndex(card => card.id === cardId);
+    if (cardIndex === -1) return;
+
+    marketBoard[tier].splice(cardIndex, 1);
+
+    const replacement = drawCardFromTier(tier);
+    if (replacement) marketBoard[tier].push(replacement);
+  }
+
+  if (state.selectedDeckTier !== null){
+    tier = state.selectedDeckTier;
+    card = drawCardFromTier(tier);
+    reservedFromDeck = true;
+
+    if (!card){
+      setLog(`No cards left in Tier ${tier} deck.`);
+      return;
+    }
+  }
 
   player.reservedCards.push(card);
 
-  const cardIndex = marketBoard[tier].findIndex(card => card.id === cardId);
-  if (cardIndex === -1) return;
-
-  marketBoard[tier].splice(cardIndex, 1);
-
-  const replacement = drawCardFromTier(tier);
-  if (replacement) marketBoard[tier].push(replacement);
-
   if (state.bank.Wild > 0 && totalChip(player.chips) < 10){
-  player.chips.Wild += 1;
-  state.bank.Wild -= 1;
-}
+    player.chips.Wild += 1;
+    state.bank.Wild -= 1;
+  }
 
-  setLog(`Player ${state.currentPlayerIndex + 1} reserved a ${card.color} level ${card.tier} card.`);
+  const currentPlayerName = getPlayerDisplayName(state.currentPlayerIndex);
+  const nextPlayerIndex = (state.currentPlayerIndex + 1) % state.players.length;
+  const nextPlayerName = getPlayerDisplayName(nextPlayerIndex);
+
+  if (reservedFromDeck){
+    setLog(`${currentPlayerName} reserved a face-down Tier ${tier} card. ${nextPlayerName}'s turn.`);
+  } else {
+    setLog(`${currentPlayerName} reserved a ${card.color} level ${card.tier} card. ${nextPlayerName}'s turn.`);
+  }
 
   endTurn();
 }
 
 function renderReservedCards(){
-  const player = getCurrentPlayer();
+  const player = state.players[state.humanPlayerIndex];
   const reservedEl = document.querySelector("#currentPlayerReservedCards");
 
   reservedEl.innerHTML = player.reservedCards
@@ -2008,8 +2184,14 @@ function renderReservedCards(){
       })
       .join("");
 
+      const isSelectedReserved =
+        state.currentAction === "buy" &&
+        state.selectedReservedCardIndex === index;
+
+      const selectedClass = isSelectedReserved ? "is-selected-card" : "";
+
       return `
-        <div class="card reserved-card">
+        <div class="card reserved-card ${selectedClass}" data-index="${index}">
           <div class="card-top">
             <span class="card-points">${card.points}</span>
             <span class="card-bonus ${card.color.toLowerCase()}">${card.color}</span>
@@ -2020,7 +2202,6 @@ function renderReservedCards(){
           <div class="card-costs">
             ${costHTML}
           </div>
-          <button class="buyReservedCardButton" data-index="${index}">Buy Reserved</button>
         </div>
       `;
     })
@@ -2028,17 +2209,23 @@ function renderReservedCards(){
 }
 
 function renderMarket(){
-  marketTier3El.innerHTML = marketBoard[3]
-    .map((card, index) => createCardHTML(card, index, 3))
-    .join("");
+  marketTier3El.innerHTML =
+    createDeckStackHTML(3) +
+    marketBoard[3]
+      .map((card, index) => createCardHTML(card, index, 3))
+      .join("");
 
-  marketTier2El.innerHTML = marketBoard[2]
-    .map((card, index) => createCardHTML(card, index, 2))
-    .join("");
+  marketTier2El.innerHTML =
+    createDeckStackHTML(2) +
+    marketBoard[2]
+      .map((card, index) => createCardHTML(card, index, 2))
+      .join("");
 
-  marketTier1El.innerHTML = marketBoard[1]
-    .map((card, index) => createCardHTML(card, index, 1))
-    .join("");
+  marketTier1El.innerHTML =
+    createDeckStackHTML(1) +
+    marketBoard[1]
+      .map((card, index) => createCardHTML(card, index, 1))
+      .join("");
 }
 
 function cancelAction(){
@@ -2047,7 +2234,9 @@ function cancelAction(){
 
   state.currentAction = "take";
   state.selectedReserveIndex = null;
+  state.selectedReservedCardIndex = null;
   state.selectedBuyIndex = null;
+  state.selectedDeckTier = null;
   clearSelectionOnly();
 
   setLog(`${getPlayerDisplayName(state.currentPlayerIndex)} cancelled the current action.`);
@@ -2058,7 +2247,10 @@ confirmButton.addEventListener("click", confirmTake);
 clearButton.addEventListener("click", clearSelection);
 
 reserveModeButton.addEventListener("click", () => {
-  if (state.currentAction === "reserve" && state.selectedReserveIndex !== null) {
+  if (
+    state.currentAction === "reserve" &&
+    (state.selectedReserveIndex !== null || state.selectedDeckTier !== null)
+  ) {
     confirmReserveCard();
     return;
   }
