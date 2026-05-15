@@ -1546,8 +1546,8 @@ function renderPlayersOverview(){
   if (!playersOverviewEl) return;
 
   playersOverviewEl.innerHTML = state.players
-    .map((player, index) => ({ player, index }))
-    .filter(({ index }) => index !== state.currentPlayerIndex)
+  .map((player, index) => ({ player, index }))
+  .filter(({ index }) => index !== state.humanPlayerIndex)
     .map(({ player, index }) => {
       const roleLabel = getPlayerDisplayName(index);
 
